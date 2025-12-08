@@ -6,7 +6,6 @@ import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../router/app_router.dart';
 import '../../../../services/location_service.dart';
 import '../widgets/city_search_bar.dart';
-import '../widgets/navigation_cards_row.dart';
 import '../widgets/quick_cities_grid.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -28,7 +27,6 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 12),
             _CurrentLocationButton(),
             SizedBox(height: 16),
-            NavigationCardsRow(),
             SizedBox(height: 16),
             Text(AppStrings.quickCitiesTitle),
             SizedBox(height: 8),
@@ -85,9 +83,9 @@ class _CurrentLocationButtonState extends State<_CurrentLocationButton> {
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Unable to get location: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Unable to get location: $e')));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
