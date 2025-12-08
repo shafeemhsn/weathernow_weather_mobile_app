@@ -1,0 +1,21 @@
+import 'package:flutter/foundation.dart';
+
+import '../../domain/entities/forecast_day_entity.dart';
+import '../../domain/usecases/get_forecast_by_city.dart';
+
+class ForecastViewModel extends ChangeNotifier {
+  ForecastViewModel(this._useCase);
+
+  final GetForecastByCity _useCase;
+
+  List<ForecastDayEntity> forecast = <ForecastDayEntity>[];
+  bool isLoading = false;
+
+  Future<void> load(String city) async {
+    isLoading = true;
+    notifyListeners();
+    forecast = await _useCase.call(city);
+    isLoading = false;
+    notifyListeners();
+  }
+}
