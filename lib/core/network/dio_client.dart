@@ -6,18 +6,9 @@ import '../errors/exceptions.dart';
 import 'network_checker.dart';
 
 class DioClient {
-  DioClient({
-    Dio? dio,
-    NetworkChecker? networkChecker,
-  })  : _dio = dio ??
-            Dio(
-              BaseOptions(
-                baseUrl: Env.baseUrl,
-                connectTimeout: const Duration(seconds: 15),
-                receiveTimeout: const Duration(seconds: 15),
-              ),
-            ),
-        _networkChecker = networkChecker ?? NetworkChecker();
+  DioClient({Dio? dio, NetworkChecker? networkChecker})
+    : _dio = dio ?? Dio(BaseOptions(baseUrl: Env.baseUrl)),
+      _networkChecker = networkChecker ?? NetworkChecker();
 
   final Dio _dio;
   final NetworkChecker _networkChecker;
@@ -51,7 +42,9 @@ class DioClient {
     }
   }
 
-  Map<String, dynamic> _handleResponse(Response<Map<String, dynamic>> response) {
+  Map<String, dynamic> _handleResponse(
+    Response<Map<String, dynamic>> response,
+  ) {
     final statusCode = response.statusCode ?? 500;
     final data = response.data;
 
@@ -70,7 +63,8 @@ class DioClient {
   }
 
   String _mapDioError(DioException e) {
-    if (e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.receiveTimeout) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
       return 'Connection timed out';
     }
     if (e.type == DioExceptionType.badResponse) {
