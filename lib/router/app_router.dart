@@ -13,12 +13,12 @@ class AppRouter {
   static const String favourites = '/favorites';
   static const String settings = '/settings';
 
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    switch (settings.name) {
+  static Route<dynamic> onGenerateRoute(RouteSettings routeSettings) {
+    switch (routeSettings.name) {
       case home:
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case weather:
-        final args = settings.arguments as Map<String, dynamic>?;
+        final args = routeSettings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
           builder: (_) => CurrentWeatherScreen(
             city: args?["city"] as String?,
@@ -26,7 +26,7 @@ class AppRouter {
           ),
         );
       case forecast:
-        final args = settings.arguments as Map<String, dynamic>?;
+        final args = routeSettings.arguments as Map<String, dynamic>?;
         return MaterialPageRoute(
           builder: (_) => ForecastScreen(
             city: args?["city"] as String?,
