@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/constants/app_strings.dart';
-import '../../../../core/constants/cities.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../router/app_router.dart';
 import '../../../../services/location_service.dart';
 import '../widgets/city_search_bar.dart';
-import '../widgets/quick_cities_grid.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -27,10 +25,6 @@ class HomeScreen extends StatelessWidget {
             SizedBox(height: 12),
             _CurrentLocationButton(),
             SizedBox(height: 16),
-            SizedBox(height: 16),
-            Text(AppStrings.quickCitiesTitle),
-            SizedBox(height: 8),
-            Expanded(child: QuickCitiesGrid(cities: quickCities)),
           ],
         ),
       ),
