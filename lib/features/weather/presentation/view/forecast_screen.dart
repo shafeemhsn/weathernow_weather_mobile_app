@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/utils/date_formatter.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../router/app_router.dart';
 import '../../../favourites/data/repository/favourites_repository_impl.dart';
 import '../../../favourites/data/sources/favourites_local_source.dart';
@@ -16,6 +17,7 @@ import '../../data/sources/weather_api_service.dart';
 import '../../domain/entities/forecast_day_entity.dart';
 import '../../domain/usecases/get_forecast_by_city.dart';
 import '../viewmodel/forecast_viewmodel.dart';
+import '../widgets/city_not_found_card.dart';
 import '../widgets/forecast_day_card.dart';
 
 class ForecastScreen extends StatefulWidget {
@@ -53,6 +55,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
     final city = widget.city;
     if (city != null && city.isNotEmpty) {
       await _viewModel.load(city);
+      if (_viewModel.errorMessage != null) {
+        if (mounted) setState(() => _headerLocation = null);
+        return;
+      }
       final current = await _repository.getWeatherByCity(city);
       if (!mounted) return;
       setState(() {
@@ -92,7 +98,14 @@ class _ForecastScreenState extends State<ForecastScreen> {
               return const Center(child: CircularProgressIndicator());
             }
             if (_viewModel.errorMessage != null) {
-              return Center(child: Text(_viewModel.errorMessage!));
+              final message = _viewModel.errorMessage!;
+              if (_isCityNotFound(message)) {
+                return CityNotFoundCard(
+                  city: widget.city,
+                  onSearchAgain: _goBackToSearch,
+                );
+              }
+              return ErrorStateWidget(message: message, onRetry: _load);
             }
             final items = _viewModel.forecast.take(5).toList();
             if (items.isEmpty) {
@@ -134,6 +147,21 @@ class _ForecastScreenState extends State<ForecastScreen> {
         },
       ),
     );
+  }
+
+  bool _isCityNotFound(String? message) {
+    if (message == null) return false;
+    final lower = message.toLowerCase();
+    return lower.contains('city not found') || lower.contains('404');
+  }
+
+  void _goBackToSearch() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      navigator.pushReplacementNamed(AppRouter.home);
+    }
   }
 
   String _formatDate(ForecastDayEntity day) {

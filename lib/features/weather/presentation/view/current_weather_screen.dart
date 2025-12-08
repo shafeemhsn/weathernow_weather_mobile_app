@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../router/app_router.dart';
 import '../../../favourites/data/repository/favourites_repository_impl.dart';
 import '../../../favourites/data/sources/favourites_local_source.dart';
@@ -16,6 +17,7 @@ import '../../domain/entities/weather_entity.dart';
 import '../../domain/usecases/get_weather_by_city.dart';
 import '../../domain/usecases/get_weather_by_coords.dart';
 import '../viewmodel/current_weather_viewmodel.dart';
+import '../widgets/city_not_found_card.dart';
 import '../widgets/dynamic_weather_icon.dart';
 import '../widgets/metrics_grid.dart';
 import '../widgets/temperature_section.dart';
@@ -87,6 +89,21 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
     return null;
   }
 
+  bool _isCityNotFound(String? message) {
+    if (message == null) return false;
+    final lower = message.toLowerCase();
+    return lower.contains('city not found') || lower.contains('404');
+  }
+
+  void _goBackToSearch() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      navigator.pushReplacementNamed(AppRouter.home);
+    }
+  }
+
   Future<void> _toggleFavourite(String city) async {
     if (_isFavourite) {
       await _favouritesViewModel.remove(city);
@@ -111,7 +128,14 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (_viewModel.errorMessage != null) {
-            return Center(child: Text(_viewModel.errorMessage!));
+            final message = _viewModel.errorMessage!;
+            if (_isCityNotFound(message)) {
+              return CityNotFoundCard(
+                city: widget.city,
+                onSearchAgain: _goBackToSearch,
+              );
+            }
+            return ErrorStateWidget(message: message, onRetry: _loadWeather);
           }
           final weather = _viewModel.weather;
           if (weather == null) {
