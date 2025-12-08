@@ -77,34 +77,44 @@ class _ForecastScreenState extends State<ForecastScreen> {
           ),
         ],
       ),
-      body: AnimatedBuilder(
-        animation: _viewModel,
-        builder: (context, _) {
-          if (_viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (_viewModel.errorMessage != null) {
-            return Center(child: Text(_viewModel.errorMessage!));
-          }
-          final items = _viewModel.forecast.take(5).toList();
-          if (items.isEmpty) {
-            return const Center(child: Text('No forecast data'));
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: items.length,
-            itemBuilder: (context, index) {
-              final day = items[index];
-              return ForecastDayCard(
-                dateLabel: _formatDate(day),
-                high: day.tempMax,
-                low: day.tempMin,
-                description: day.description,
-                iconCode: day.icon,
-              );
-            },
-          );
-        },
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF5F8FF), Color(0xFFEAF1FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: AnimatedBuilder(
+          animation: _viewModel,
+          builder: (context, _) {
+            if (_viewModel.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (_viewModel.errorMessage != null) {
+              return Center(child: Text(_viewModel.errorMessage!));
+            }
+            final items = _viewModel.forecast.take(5).toList();
+            if (items.isEmpty) {
+              return const Center(child: Text('No forecast data'));
+            }
+            return ListView.separated(
+              padding: const EdgeInsets.all(16),
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final day = items[index];
+                return ForecastDayCard(
+                  dateLabel: _formatDate(day),
+                  high: day.tempMax,
+                  low: day.tempMin,
+                  description: day.description,
+                  iconCode: day.icon,
+                );
+              },
+            );
+          },
+        ),
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 2,

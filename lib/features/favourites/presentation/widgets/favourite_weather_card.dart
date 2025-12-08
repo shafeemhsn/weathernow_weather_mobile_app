@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/app_card.dart';
 import '../../../weather/data/repository/weather_repository_impl.dart';
 import '../../../weather/domain/entities/weather_entity.dart';
+import '../../../weather/presentation/widgets/dynamic_weather_icon.dart';
 
 class FavouriteWeatherCard extends StatelessWidget {
   final String city;
@@ -19,24 +21,27 @@ class FavouriteWeatherCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AppCard(
+      accent: const Color(0xFF5C6BC0),
+      padding: const EdgeInsets.all(14),
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: FutureBuilder<WeatherEntity>(
-            future: repository.getWeatherByCity(city),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator(strokeWidth: 2));
-              }
-              if (snapshot.hasError || !snapshot.hasData) {
-                return _errorTile(context);
-              }
-              final weather = snapshot.data!;
-              return _content(context, weather);
-            },
-          ),
+        borderRadius: BorderRadius.circular(16),
+        child: FutureBuilder<WeatherEntity>(
+          future: repository.getWeatherByCity(city),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const SizedBox(
+                height: 120,
+                child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+              );
+            }
+            if (snapshot.hasError || !snapshot.hasData) {
+              return _errorTile(context);
+            }
+            final weather = snapshot.data!;
+            return _content(context, weather);
+          },
         ),
       ),
     );
@@ -50,20 +55,20 @@ class FavouriteWeatherCard extends StatelessWidget {
         const SizedBox(height: 8),
         const Text('Unable to load weather'),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: onRemove,
-            ),
-          ],
+        Align(
+          alignment: Alignment.centerRight,
+          child: IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: onRemove,
+          ),
         ),
       ],
     );
   }
 
   Widget _content(BuildContext context, WeatherEntity weather) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -72,10 +77,9 @@ class FavouriteWeatherCard extends StatelessWidget {
             Expanded(
               child: Text(
                 '${weather.cityName}, ${weather.country}',
-                style: Theme.of(context).textTheme.titleMedium,
+                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
-            Icon(_iconFor(weather.icon, weather.description)),
             IconButton(
               icon: const Icon(Icons.delete_outline),
               onPressed: onRemove,
@@ -83,22 +87,38 @@ class FavouriteWeatherCard extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        Text(weather.description),
-        const SizedBox(height: 8),
-        Text('${weather.temperature.toStringAsFixed(1)}°'),
+        Row(
+          children: [
+            IconTheme(
+              data: const IconThemeData(size: 34, color: Color(0xFF6B7A90)),
+              child: DynamicWeatherIcon(condition: weather.description),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    _sentenceCase(weather.description),
+                    style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${weather.temperature.toStringAsFixed(0)}°C',
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ],
     );
   }
 
-  IconData _iconFor(String code, String description) {
-    if (code.startsWith('09') || code.startsWith('10')) return Icons.umbrella_outlined;
-    if (code.startsWith('11')) return Icons.bolt_outlined;
-    if (code.startsWith('13')) return Icons.ac_unit_outlined;
-    if (code.startsWith('50')) return Icons.blur_on_outlined;
-    if (code.startsWith('02') || code.startsWith('03') || code.startsWith('04')) {
-      return Icons.cloud_outlined;
-    }
-    if (description.toLowerCase().contains('night')) return Icons.nights_stay_outlined;
-    return Icons.wb_sunny_outlined;
+  String _sentenceCase(String text) {
+    if (text.isEmpty) return '';
+    final lower = text.toLowerCase();
+    return lower[0].toUpperCase() + lower.substring(1);
   }
 }
