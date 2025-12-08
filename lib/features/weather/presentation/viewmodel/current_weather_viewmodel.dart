@@ -12,19 +12,26 @@ class CurrentWeatherViewModel extends ChangeNotifier {
 
   WeatherEntity? weather;
   bool isLoading = false;
+  String? errorMessage;
 
   Future<void> loadByCity(String city) async {
-    isLoading = true;
-    notifyListeners();
-    weather = await _byCity.call(city);
-    isLoading = false;
-    notifyListeners();
+    await _load(() => _byCity.call(city));
   }
 
-  Future<void> loadByCoords(String coords) async {
+  Future<void> loadByCoords(double lat, double lon) async {
+    await _load(() => _byCoords.call(lat, lon));
+  }
+
+  Future<void> _load(Future<WeatherEntity> Function() loader) async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    weather = await _byCoords.call(coords);
+    try {
+      weather = await loader();
+    } catch (e) {
+      errorMessage = e.toString();
+      weather = null;
+    }
     isLoading = false;
     notifyListeners();
   }

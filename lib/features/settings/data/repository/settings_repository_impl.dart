@@ -10,7 +10,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
 
   @override
   Future<void> clearAll() async {
-    _source.save(const SettingsModel(temperatureUnit: 'C', windUnit: 'km/h', autoLocation: true));
+    await _source.clear();
   }
 
   @override

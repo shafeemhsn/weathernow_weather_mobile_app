@@ -6,7 +6,7 @@ class GetWeatherByCoords {
 
   final WeatherRepository _repository;
 
-  Future<WeatherEntity> call(String coords) {
-    return _repository.getWeatherByCoords(coords);
+  Future<WeatherEntity> call(double lat, double lon) {
+    return _repository.getWeatherByCoords(lat, lon);
   }
 }

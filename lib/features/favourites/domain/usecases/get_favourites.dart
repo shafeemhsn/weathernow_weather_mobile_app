@@ -6,5 +6,5 @@ class GetFavourites {
 
   final FavouritesRepository _repository;
 
-  Future<List<FavouriteCity>> call() => _repository.getFavourites();
+  Future<List<FavouriteCity>> call({String query = ''}) => _repository.getFavourites(query: query);
 }

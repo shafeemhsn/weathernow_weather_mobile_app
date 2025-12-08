@@ -1,7 +1,7 @@
 class ServerException implements Exception {
   final String message;
 
-  ServerException(this.message);
+  const ServerException(this.message);
 
   @override
   String toString() => 'ServerException: ' + message;
@@ -10,7 +10,7 @@ class ServerException implements Exception {
 class CacheException implements Exception {
   final String message;
 
-  CacheException(this.message);
+  const CacheException(this.message);
 
   @override
   String toString() => 'CacheException: ' + message;

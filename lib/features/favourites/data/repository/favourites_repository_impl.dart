@@ -9,17 +9,22 @@ class FavouritesRepositoryImpl implements FavouritesRepository {
   final FavouritesLocalSource _source;
 
   @override
-  Future<void> addFavourite(FavouriteCity city) {
-    return _source.add(FavouriteCityModel(name: city.name));
+  Future<void> addFavourite(FavouriteCity city) async {
+    await _source.add(FavouriteCityModel(name: city.name));
   }
 
   @override
-  Future<List<FavouriteCity>> getFavourites() {
-    return _source.fetch();
+  Future<List<FavouriteCity>> getFavourites({String query = ''}) {
+    return _source.fetch(query: query);
   }
 
   @override
-  Future<void> removeFavourite(FavouriteCity city) {
-    return _source.remove(FavouriteCityModel(name: city.name));
+  Future<void> removeFavourite(FavouriteCity city) async {
+    await _source.remove(FavouriteCityModel(name: city.name));
+  }
+
+  @override
+  Future<bool> isFavourite(String city) {
+    return _source.contains(city);
   }
 }

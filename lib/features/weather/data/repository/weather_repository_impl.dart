@@ -14,8 +14,8 @@ class WeatherRepositoryImpl implements WeatherRepository {
   }
 
   @override
-  Future<WeatherEntity> getWeatherByCoords(String coords) {
-    return _service.fetchWeatherByCoords(coords);
+  Future<WeatherEntity> getWeatherByCoords(double lat, double lon) {
+    return _service.fetchWeatherByCoords(lat, lon);
   }
 
   @override

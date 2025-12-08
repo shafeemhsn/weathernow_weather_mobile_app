@@ -1,4 +1,4 @@
-import '../../../../config/env.dart';
+import '../../../../core/constants/api_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../models/forecast_model.dart';
 import '../models/weather_model.dart';
@@ -9,17 +9,20 @@ class WeatherApiService {
   final DioClient _client;
 
   Future<WeatherModel> fetchWeatherByCity(String city) async {
-    final json = await _client.get('/weather', queryParameters: {'q': city, 'appid': Env.apiKey});
+    final json = await _client.get(ApiConstants.currentWeatherPath, queryParameters: {'q': city});
     return WeatherModel.fromJson(json);
   }
 
-  Future<WeatherModel> fetchWeatherByCoords(String coords) async {
-    final json = await _client.get('/weather', queryParameters: {'latlon': coords, 'appid': Env.apiKey});
+  Future<WeatherModel> fetchWeatherByCoords(double lat, double lon) async {
+    final json = await _client.get(
+      ApiConstants.currentWeatherPath,
+      queryParameters: {'lat': lat, 'lon': lon},
+    );
     return WeatherModel.fromJson(json);
   }
 
   Future<List<ForecastModel>> fetchForecastByCity(String city) async {
-    final json = await _client.get('/forecast', queryParameters: {'q': city, 'appid': Env.apiKey});
+    final json = await _client.get(ApiConstants.forecastPath, queryParameters: {'q': city});
     final List<dynamic> items = json['list'] as List<dynamic>? ?? <dynamic>[];
     return items.map((item) => ForecastModel.fromJson(item as Map<String, dynamic>)).toList();
   }

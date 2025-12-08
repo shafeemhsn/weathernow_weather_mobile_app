@@ -10,11 +10,18 @@ class ForecastViewModel extends ChangeNotifier {
 
   List<ForecastDayEntity> forecast = <ForecastDayEntity>[];
   bool isLoading = false;
+  String? errorMessage;
 
   Future<void> load(String city) async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    forecast = await _useCase.call(city);
+    try {
+      forecast = await _useCase.call(city);
+    } catch (e) {
+      errorMessage = e.toString();
+      forecast = <ForecastDayEntity>[];
+    }
     isLoading = false;
     notifyListeners();
   }

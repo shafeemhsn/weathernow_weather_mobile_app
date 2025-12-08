@@ -1,4 +1,11 @@
+import '../core/constants/api_constants.dart';
+
 class Env {
-  static const String apiKey = String.fromEnvironment('OPENWEATHER_API_KEY');
-  static const String baseUrl = 'https://api.openweathermap.org/data/2.5';
+  /// API key should be provided via --dart-define or env to avoid shipping secrets.
+  static const String apiKey = String.fromEnvironment(
+    ApiConstants.apiKeyEnvKey,
+    defaultValue: '',
+  );
+
+  static const String baseUrl = ApiConstants.baseUrl;
 }
