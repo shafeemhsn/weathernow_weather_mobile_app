@@ -11,6 +11,7 @@ class UpdateTemperatureUnit {
       temperatureUnit: unit,
       windUnit: settings.windUnit,
       autoLocation: settings.autoLocation,
+      notificationsEnabled: settings.notificationsEnabled,
     ));
   }
 }

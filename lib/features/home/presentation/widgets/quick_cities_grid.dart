@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../router/app_router.dart';
 
 class QuickCitiesGrid extends StatelessWidget {
   final List<String> cities;
@@ -18,7 +19,7 @@ class QuickCitiesGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final city = cities[index];
         return ElevatedButton(
-          onPressed: () => Navigator.of(context).pushNamed('/weather', arguments: {'city': city}),
+          onPressed: () => Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': city}),
           child: Text(city),
         );
       },

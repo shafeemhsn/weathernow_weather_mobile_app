@@ -5,6 +5,7 @@ class SettingsModel extends SettingsEntity {
     required super.temperatureUnit,
     required super.windUnit,
     required super.autoLocation,
+    required super.notificationsEnabled,
   });
 
   factory SettingsModel.fromJson(Map<String, dynamic> json) {
@@ -12,6 +13,7 @@ class SettingsModel extends SettingsEntity {
       temperatureUnit: json['temperatureUnit'] as String? ?? 'C',
       windUnit: json['windUnit'] as String? ?? 'km/h',
       autoLocation: json['autoLocation'] as bool? ?? true,
+      notificationsEnabled: json['notificationsEnabled'] as bool? ?? true,
     );
   }
 
@@ -20,6 +22,7 @@ class SettingsModel extends SettingsEntity {
       'temperatureUnit': temperatureUnit,
       'windUnit': windUnit,
       'autoLocation': autoLocation,
+      'notificationsEnabled': notificationsEnabled,
     };
   }
 }

@@ -24,6 +24,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       temperatureUnit: settings.temperatureUnit,
       windUnit: settings.windUnit,
       autoLocation: settings.autoLocation,
+      notificationsEnabled: settings.notificationsEnabled,
     ));
   }
 }

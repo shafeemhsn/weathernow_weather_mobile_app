@@ -40,4 +40,9 @@ class FavouritesLocalSource {
     final stored = prefs.getStringList(_storageKey) ?? <String>[];
     return stored.any((name) => name.toLowerCase() == city.toLowerCase());
   }
+
+  Future<void> clear() async {
+    final prefs = await _prefsFuture;
+    await prefs.remove(_storageKey);
+  }
 }

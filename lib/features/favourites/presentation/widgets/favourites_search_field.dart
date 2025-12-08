@@ -13,6 +13,7 @@ class FavouritesSearchField extends StatelessWidget {
         prefixIcon: Icon(Icons.search),
         border: OutlineInputBorder(),
       ),
+      onChanged: onSearch,
       onSubmitted: onSearch,
     );
   }

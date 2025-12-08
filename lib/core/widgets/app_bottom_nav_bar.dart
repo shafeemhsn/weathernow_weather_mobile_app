@@ -18,6 +18,7 @@ class AppBottomNavBar extends StatelessWidget {
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
         BottomNavigationBarItem(icon: Icon(Icons.cloud), label: 'Weather'),
+        BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Forecast'),
         BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ],

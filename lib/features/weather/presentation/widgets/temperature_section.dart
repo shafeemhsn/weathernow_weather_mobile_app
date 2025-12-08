@@ -14,9 +14,9 @@ class TemperatureSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('${temperature.toStringAsFixed(1)}?', style: Theme.of(context).textTheme.headlineMedium),
+        Text('${temperature.toStringAsFixed(1)}°', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(width: 8),
-        Text('Feels like ${feelsLike.toStringAsFixed(1)}?'),
+        Text('Feels like ${feelsLike.toStringAsFixed(1)}°'),
       ],
     );
   }

@@ -22,7 +22,7 @@ class AppRouter {
         return MaterialPageRoute(
           builder: (_) => CurrentWeatherScreen(
             city: args?["city"] as String?,
-            coords: args?["coords"] as String?,
+            coords: args?["coords"],
           ),
         );
       case forecast:

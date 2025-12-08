@@ -1,17 +1,17 @@
 import '../entities/settings_entity.dart';
 import '../repository/settings_repository.dart';
 
-class UpdateWindUnit {
-  UpdateWindUnit(this._repository);
+class UpdateNotifications {
+  UpdateNotifications(this._repository);
 
   final SettingsRepository _repository;
 
-  Future<void> call(SettingsEntity settings, String unit) {
+  Future<void> call(SettingsEntity settings, bool enabled) {
     return _repository.update(SettingsEntity(
       temperatureUnit: settings.temperatureUnit,
-      windUnit: unit,
+      windUnit: settings.windUnit,
       autoLocation: settings.autoLocation,
-      notificationsEnabled: settings.notificationsEnabled,
+      notificationsEnabled: enabled,
     ));
   }
 }

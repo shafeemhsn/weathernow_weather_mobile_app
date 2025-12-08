@@ -1,10 +1,45 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../router/app_router.dart';
+import '../../../weather/data/repository/weather_repository_impl.dart';
+import '../../../weather/data/sources/weather_api_service.dart';
+import '../../data/repository/favourites_repository_impl.dart';
+import '../../data/sources/favourites_local_source.dart';
+import '../../domain/entities/favourite_city.dart';
+import '../../domain/usecases/add_favourite.dart';
+import '../../domain/usecases/get_favourites.dart';
+import '../../domain/usecases/is_favourite.dart';
+import '../../domain/usecases/remove_favourite.dart';
+import '../viewmodel/favourites_viewmodel.dart';
+import '../widgets/favourite_weather_card.dart';
+import '../widgets/favourites_search_field.dart';
 
-class FavouritesScreen extends StatelessWidget {
+class FavouritesScreen extends StatefulWidget {
   const FavouritesScreen({super.key});
+
+  @override
+  State<FavouritesScreen> createState() => _FavouritesScreenState();
+}
+
+class _FavouritesScreenState extends State<FavouritesScreen> {
+  late final FavouritesViewModel _viewModel;
+  late final WeatherRepositoryImpl _weatherRepository;
+
+  @override
+  void initState() {
+    super.initState();
+    final favRepo = FavouritesRepositoryImpl(FavouritesLocalSource());
+    _viewModel = FavouritesViewModel(
+      GetFavourites(favRepo),
+      AddFavourite(favRepo),
+      RemoveFavourite(favRepo),
+      IsFavourite(favRepo),
+    );
+    _weatherRepository = WeatherRepositoryImpl(WeatherApiService(DioClient()));
+    _viewModel.load();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -13,21 +48,85 @@ class FavouritesScreen extends StatelessWidget {
         automaticallyImplyLeading: false,
         title: const Text('Favorites'),
       ),
-      body: const Center(
-        child: Text('Your favourite cities will appear here.'),
+      body: AnimatedBuilder(
+        animation: _viewModel,
+        builder: (context, _) {
+          final favourites = _viewModel.favourites;
+          return Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                FavouritesSearchField(onSearch: (value) => _viewModel.filter(value)),
+                const SizedBox(height: 12),
+                Text('Matches: ${favourites.length}'),
+                const SizedBox(height: 12),
+                Expanded(
+                  child: favourites.isEmpty
+                      ? const Center(child: Text('No favourites yet. Add some cities!'))
+                      : GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 0.9,
+                            crossAxisSpacing: 8,
+                            mainAxisSpacing: 8,
+                          ),
+                          itemCount: favourites.length,
+                          itemBuilder: (context, index) {
+                            final favourite = favourites[index];
+                            return FavouriteWeatherCard(
+                              city: favourite.name,
+                              repository: _weatherRepository,
+                              onRemove: () => _remove(favourite),
+                              onTap: () => _openDetails(favourite),
+                            );
+                          },
+                        ),
+                ),
+            ],
+          ),
+        );
+      },
       ),
       bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 2,
+        currentIndex: 3,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
             Navigator.of(context).pushReplacementNamed(AppRouter.weather);
-          } else if (index == 3) {
+          } else if (index == 2) {
+            final firstCity =
+                _viewModel.favourites.isNotEmpty ? _viewModel.favourites.first.name : null;
+            if (firstCity != null) {
+              Navigator.of(context).pushReplacementNamed(
+                AppRouter.forecast,
+                arguments: {'city': firstCity},
+              );
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Add a favourite to view its forecast')),
+              );
+            }
+          } else if (index == 4) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
       ),
     );
+  }
+
+  Future<void> _remove(FavouriteCity city) async {
+    await _viewModel.remove(city.name);
+  }
+
+  void _openDetails(FavouriteCity city) {
+    Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': city.name});
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 }

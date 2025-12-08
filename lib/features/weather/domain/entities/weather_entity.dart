@@ -7,6 +7,7 @@ class WeatherEntity {
   final String icon;
   final int humidity;
   final double windSpeed;
+  final int windDirection;
   final int pressure;
   final int visibility;
 
@@ -19,6 +20,7 @@ class WeatherEntity {
     required this.icon,
     required this.humidity,
     required this.windSpeed,
+    required this.windDirection,
     required this.pressure,
     required this.visibility,
   });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../router/app_router.dart';
 
 class NavigationCardsRow extends StatelessWidget {
   const NavigationCardsRow({super.key});
@@ -12,7 +13,7 @@ class NavigationCardsRow extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.favorite),
               title: const Text('Favorites'),
-              onTap: () => Navigator.of(context).pushNamed('/favorites'),
+              onTap: () => Navigator.of(context).pushNamed(AppRouter.favourites),
             ),
           ),
         ),
@@ -22,7 +23,7 @@ class NavigationCardsRow extends StatelessWidget {
             child: ListTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
-              onTap: () => Navigator.of(context).pushNamed('/settings'),
+              onTap: () => Navigator.of(context).pushNamed(AppRouter.settings),
             ),
           ),
         ),

@@ -10,6 +10,7 @@ class WeatherModel extends WeatherEntity {
     required super.icon,
     required super.humidity,
     required super.windSpeed,
+    required super.windDirection,
     required super.pressure,
     required super.visibility,
   });
@@ -30,6 +31,7 @@ class WeatherModel extends WeatherEntity {
       icon: weather?['icon'] as String? ?? '',
       humidity: (main?['humidity'] ?? 0).toInt(),
       windSpeed: (wind?['speed'] ?? 0).toDouble(),
+      windDirection: (wind?['deg'] ?? 0).toInt(),
       pressure: (main?['pressure'] ?? 0).toInt(),
       visibility: (json['visibility'] ?? 0).toInt(),
     );
@@ -45,6 +47,7 @@ class WeatherModel extends WeatherEntity {
       'icon': icon,
       'humidity': humidity,
       'wind_speed': windSpeed,
+      'wind_direction': windDirection,
       'pressure': pressure,
       'visibility': visibility,
     };

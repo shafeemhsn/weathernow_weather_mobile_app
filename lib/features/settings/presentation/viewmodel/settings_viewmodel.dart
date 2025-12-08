@@ -4,6 +4,7 @@ import '../../domain/entities/settings_entity.dart';
 import '../../domain/usecases/clear_all_data.dart';
 import '../../domain/usecases/get_settings.dart';
 import '../../domain/usecases/update_auto_location.dart';
+import '../../domain/usecases/update_notifications.dart';
 import '../../domain/usecases/update_temperature_unit.dart';
 import '../../domain/usecases/update_wind_unit.dart';
 
@@ -13,6 +14,7 @@ class SettingsViewModel extends ChangeNotifier {
     this._updateTemp,
     this._updateWind,
     this._updateAuto,
+    this._updateNotifications,
     this._clear,
   );
 
@@ -20,6 +22,7 @@ class SettingsViewModel extends ChangeNotifier {
   final UpdateTemperatureUnit _updateTemp;
   final UpdateWindUnit _updateWind;
   final UpdateAutoLocation _updateAuto;
+  final UpdateNotifications _updateNotifications;
   final ClearAllData _clear;
 
   SettingsEntity? settings;
@@ -44,6 +47,12 @@ class SettingsViewModel extends ChangeNotifier {
   Future<void> updateAutoLocation(bool auto) async {
     if (settings == null) return;
     await _updateAuto.call(settings!, auto);
+    await load();
+  }
+
+  Future<void> updateNotifications(bool enabled) async {
+    if (settings == null) return;
+    await _updateNotifications.call(settings!, enabled);
     await load();
   }
 
