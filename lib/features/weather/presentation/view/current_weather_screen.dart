@@ -102,7 +102,7 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: Text('Weather'),
+        title: const Text('Weather'),
       ),
       body: AnimatedBuilder(
         animation: _viewModel,
@@ -176,56 +176,87 @@ class _WeatherContent extends StatelessWidget {
     required this.onViewForecast,
   });
 
+  String _sentenceCase(String text) {
+    if (text.isEmpty) return '';
+    final lower = text.toLowerCase();
+    return lower[0].toUpperCase() + lower.substring(1);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('${weather.cityName}, ${weather.country}',
-                        style: Theme.of(context).textTheme.headlineMedium),
-                    const SizedBox(height: 4),
-                    Text(weather.description, style: Theme.of(context).textTheme.bodyLarge),
-                  ],
+    final textTheme = Theme.of(context).textTheme;
+
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFF5F8FF), Color(0xFFEAF1FF)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+      ),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '${weather.cityName}, ${weather.country}',
+                        style: textTheme.headlineMedium?.copyWith(fontSize: 28, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Current Weather',
+                        style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(isFavourite ? Icons.favorite : Icons.favorite_border, color: Colors.redAccent),
+                  onPressed: onToggleFavourite,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TemperatureSection(
+              temperature: weather.temperature,
+              feelsLike: weather.feelsLike,
+              description: _sentenceCase(weather.description),
+              icon: IconTheme(
+                data: const IconThemeData(size: 70, color: Color(0xFF6B7A90)),
+                child: DynamicWeatherIcon(condition: weather.description),
+              ),
+            ),
+            const SizedBox(height: 16),
+            MetricsGrid(
+              humidity: weather.humidity,
+              windSpeed: weather.windSpeed,
+              windDirection: weather.windDirection,
+              pressure: weather.pressure,
+              visibility: weather.visibility,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: onViewForecast,
+                icon: const Icon(Icons.calendar_month_outlined),
+                label: const Text('View 5-day forecast'),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
               ),
-              IconButton(
-                icon: Icon(isFavourite ? Icons.favorite : Icons.favorite_border, color: Colors.red),
-                onPressed: onToggleFavourite,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          DynamicWeatherIcon(condition: weather.description),
-          const SizedBox(height: 16),
-          TemperatureSection(temperature: weather.temperature, feelsLike: weather.feelsLike),
-          const SizedBox(height: 8),
-          Text('Feels like with wind chill and humidity'),
-          const SizedBox(height: 16),
-          MetricsGrid(
-            humidity: weather.humidity,
-            windSpeed: weather.windSpeed,
-            windDirection: weather.windDirection,
-            pressure: weather.pressure,
-            visibility: weather.visibility,
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: onViewForecast,
-              icon: const Icon(Icons.calendar_today),
-              label: const Text('View 5-day forecast'),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
