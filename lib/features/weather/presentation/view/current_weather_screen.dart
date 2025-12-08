@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../router/app_router.dart';
 import '../widgets/dynamic_weather_icon.dart';
 import '../widgets/metrics_grid.dart';
 import '../widgets/temperature_section.dart';
@@ -16,7 +17,10 @@ class CurrentWeatherScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayLocation = city ?? coords ?? 'Unknown';
     return Scaffold(
-      appBar: AppBar(title: Text('Weather: ' + displayLocation)),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Text('Weather: ' + displayLocation),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -36,11 +40,11 @@ class CurrentWeatherScreen extends StatelessWidget {
         currentIndex: 1,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(context).pushNamed('/');
+            Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 2) {
-            Navigator.of(context).pushNamed('/favorites');
+            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
           } else if (index == 3) {
-            Navigator.of(context).pushNamed('/settings');
+            Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
       ),

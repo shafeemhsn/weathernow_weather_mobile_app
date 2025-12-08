@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/cities.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../router/app_router.dart';
 import '../widgets/city_search_bar.dart';
 import '../widgets/navigation_cards_row.dart';
 import '../widgets/quick_cities_grid.dart';
@@ -13,7 +14,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.appName)),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text(AppStrings.appName),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -32,12 +36,13 @@ class HomeScreen extends StatelessWidget {
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
         onTap: (index) {
+          if (index == 0) return;
           if (index == 1) {
-            Navigator.of(context).pushNamed('/weather');
+            Navigator.of(context).pushReplacementNamed(AppRouter.weather);
           } else if (index == 2) {
-            Navigator.of(context).pushNamed('/favorites');
+            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
           } else if (index == 3) {
-            Navigator.of(context).pushNamed('/settings');
+            Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
       ),

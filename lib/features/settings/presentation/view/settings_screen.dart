@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../router/app_router.dart';
 import '../widgets/app_preferences_section.dart';
 import '../widgets/data_management_section.dart';
 import '../widgets/unit_toggle_section.dart';
@@ -11,7 +12,10 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Settings'),
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: const [
@@ -26,11 +30,11 @@ class SettingsScreen extends StatelessWidget {
         currentIndex: 3,
         onTap: (index) {
           if (index == 0) {
-            Navigator.of(context).pushNamed('/');
+            Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushNamed('/weather');
+            Navigator.of(context).pushReplacementNamed(AppRouter.weather);
           } else if (index == 2) {
-            Navigator.of(context).pushNamed('/favorites');
+            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
           }
         },
       ),
