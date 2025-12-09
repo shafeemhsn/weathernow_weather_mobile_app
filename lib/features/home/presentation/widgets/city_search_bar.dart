@@ -62,10 +62,19 @@ class _CitySearchBarState extends State<CitySearchBar> {
         Expanded(
           child: TextField(
             controller: _controller,
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search),
+            decoration: InputDecoration(
+              prefixIcon: const Icon(Icons.search),
               hintText: AppStrings.searchCityHint,
-              border: OutlineInputBorder(),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: Colors.blue),
+              ),
             ),
             onSubmitted: _performSearch,
           ),
