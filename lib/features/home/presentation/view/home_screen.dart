@@ -13,6 +13,13 @@ import '../../../recent_searches/domain/usecases/remove_recent_search.dart';
 import '../../../recent_searches/presentation/viewmodel/recent_searches_viewmodel.dart';
 import '../../../weather/data/repository/weather_repository_impl.dart';
 import '../../../weather/data/sources/weather_api_service.dart';
+import '../../../favourites/data/repository/favourites_repository_impl.dart';
+import '../../../favourites/data/sources/favourites_local_source.dart';
+import '../../../favourites/domain/usecases/add_favourite.dart';
+import '../../../favourites/domain/usecases/get_favourites.dart';
+import '../../../favourites/domain/usecases/is_favourite.dart';
+import '../../../favourites/domain/usecases/remove_favourite.dart';
+import '../../../favourites/presentation/viewmodel/favourites_viewmodel.dart';
 import '../../../../core/network/dio_client.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -25,6 +32,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final RecentSearchesViewModel _recentSearchesViewModel;
   late final WeatherRepositoryImpl _weatherRepository;
+  late final FavouritesViewModel _favouritesViewModel;
 
   @override
   void initState() {
@@ -36,6 +44,13 @@ class _HomeScreenState extends State<HomeScreen> {
       RemoveRecentSearch(recentRepo),
     );
     _weatherRepository = WeatherRepositoryImpl(WeatherApiService(DioClient()));
+    final favouritesRepo = FavouritesRepositoryImpl(FavouritesLocalSource());
+    _favouritesViewModel = FavouritesViewModel(
+      GetFavourites(favouritesRepo),
+      AddFavourite(favouritesRepo),
+      RemoveFavourite(favouritesRepo),
+      IsFavourite(favouritesRepo),
+    );
     _recentSearchesViewModel.load();
   }
 
@@ -55,6 +70,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _removeRecent(String city) async {
     await _recentSearchesViewModel.remove(city);
+  }
+
+  Future<bool> _isFavourite(String city) {
+    return _favouritesViewModel.isFavourite(city);
+  }
+
+  Future<void> _toggleFavourite(String city, bool isFavourite) async {
+    if (isFavourite) {
+      await _favouritesViewModel.remove(city);
+    } else {
+      await _favouritesViewModel.add(city);
+    }
   }
 
   @override
@@ -84,6 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 onSelect: _openRecentSearch,
                 onRemove: _removeRecent,
                 onForecast: _openForecast,
+                isFavouriteProvider: _isFavourite,
+                onToggleFavourite: _toggleFavourite,
               ),
             ),
             const SizedBox(height: 16),
@@ -106,6 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _recentSearchesViewModel.dispose();
+    _favouritesViewModel.dispose();
     super.dispose();
   }
 }

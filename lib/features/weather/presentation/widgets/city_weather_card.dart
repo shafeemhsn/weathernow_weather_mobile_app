@@ -5,7 +5,7 @@ import '../../data/repository/weather_repository_impl.dart';
 import '../../domain/entities/weather_entity.dart';
 import 'dynamic_weather_icon.dart';
 
-class CityWeatherCard extends StatelessWidget {
+class CityWeatherCard extends StatefulWidget {
   const CityWeatherCard({
     super.key,
     required this.city,
@@ -13,6 +13,9 @@ class CityWeatherCard extends StatelessWidget {
     required this.onRemove,
     required this.onOpenDetails,
     required this.onOpenForecast,
+    this.showFavouriteAction = false,
+    this.isFavouriteProvider,
+    this.onToggleFavourite,
   });
 
   final String city;
@@ -20,11 +23,70 @@ class CityWeatherCard extends StatelessWidget {
   final VoidCallback onRemove;
   final VoidCallback onOpenDetails;
   final VoidCallback onOpenForecast;
+  final bool showFavouriteAction;
+  final Future<bool> Function(String city)? isFavouriteProvider;
+  final Future<void> Function(String city, bool isFavourite)? onToggleFavourite;
+
+  @override
+  State<CityWeatherCard> createState() => _CityWeatherCardState();
+}
+
+class _CityWeatherCardState extends State<CityWeatherCard> {
+  late Future<WeatherEntity> _weatherFuture;
+  bool? _isFavourite;
+  bool _isFavouriteLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _weatherFuture = widget.repository.getWeatherByCity(widget.city);
+    _loadFavouriteStatus();
+  }
+
+  @override
+  void didUpdateWidget(covariant CityWeatherCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.city != widget.city || oldWidget.repository != widget.repository) {
+      _weatherFuture = widget.repository.getWeatherByCity(widget.city);
+    }
+    if (oldWidget.city != widget.city && widget.showFavouriteAction) {
+      _loadFavouriteStatus();
+    }
+  }
+
+  Future<void> _loadFavouriteStatus() async {
+    if (!widget.showFavouriteAction || widget.isFavouriteProvider == null) return;
+    setState(() => _isFavouriteLoading = true);
+    final status = await widget.isFavouriteProvider!(widget.city);
+    if (!mounted) return;
+    setState(() {
+      _isFavourite = status;
+      _isFavouriteLoading = false;
+    });
+  }
+
+  Future<void> _handleToggleFavourite() async {
+    if (!widget.showFavouriteAction ||
+        widget.onToggleFavourite == null ||
+        widget.isFavouriteProvider == null ||
+        _isFavouriteLoading) {
+      return;
+    }
+    final current = _isFavourite ?? false;
+    setState(() => _isFavouriteLoading = true);
+    await widget.onToggleFavourite!(widget.city, current);
+    final status = await widget.isFavouriteProvider!(widget.city);
+    if (!mounted) return;
+    setState(() {
+      _isFavourite = status;
+      _isFavouriteLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<WeatherEntity>(
-      future: repository.getWeatherByCity(city),
+      future: _weatherFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return AppCard(
@@ -80,9 +142,22 @@ class CityWeatherCard extends StatelessWidget {
                 style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
-              onPressed: onRemove,
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (widget.showFavouriteAction)
+                  IconButton(
+                    icon: Icon(
+                      (_isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
+                      color: Colors.redAccent,
+                    ),
+                    onPressed: (_isFavouriteLoading || widget.onToggleFavourite == null) ? null : _handleToggleFavourite,
+                  ),
+                IconButton(
+                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  onPressed: widget.onRemove,
+                ),
+              ],
             ),
           ],
         ),
@@ -129,7 +204,7 @@ class CityWeatherCard extends StatelessWidget {
       children: [
         Expanded(
           child: FilledButton(
-            onPressed: onOpenDetails,
+            onPressed: widget.onOpenDetails,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 9),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -140,7 +215,7 @@ class CityWeatherCard extends StatelessWidget {
         const SizedBox(width: 10),
         Expanded(
           child: OutlinedButton.icon(
-            onPressed: disabledForecast ? null : onOpenForecast,
+            onPressed: disabledForecast ? null : widget.onOpenForecast,
             icon: const Icon(Icons.auto_graph),
             label: const Text('Forecast'),
             style: OutlinedButton.styleFrom(
