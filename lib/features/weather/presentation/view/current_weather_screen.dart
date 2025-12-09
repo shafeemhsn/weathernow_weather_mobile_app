@@ -44,6 +44,8 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
     final cityName = viewModel.weather?.cityName;
     if (cityName != null && cityName.isNotEmpty) {
       await ref.read(addRecentSearchProvider).call(cityName);
+      // Refresh recent searches so the home screen list updates immediately after returning.
+      await ref.read(recentSearchesViewModelProvider).load();
       _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(cityName);
       if (mounted) setState(() {});
     }
