@@ -3,17 +3,21 @@ import 'package:flutter/material.dart';
 class MetricsGrid extends StatelessWidget {
   final int humidity;
   final double windSpeed;
+  final double windSpeedMps;
   final int windDirection;
   final int pressure;
   final int visibility;
+  final String windUnitLabel;
 
   const MetricsGrid({
     super.key,
     required this.humidity,
     required this.windSpeed,
+    required this.windSpeedMps,
     required this.windDirection,
     required this.pressure,
     required this.visibility,
+    required this.windUnitLabel,
   });
 
   @override
@@ -37,11 +41,11 @@ class MetricsGrid extends StatelessWidget {
         _MetricCard(
           width: cardWidth,
           title: 'Wind Speed',
-          value: '${windSpeed.toStringAsFixed(1)} m/s ${_directionFromDegrees(windDirection)}',
-          subtitle: _windDescription(windSpeed),
+          value: '${windSpeed.toStringAsFixed(1)} $windUnitLabel ${_directionFromDegrees(windDirection)}',
+          subtitle: _windDescription(windSpeedMps),
           icon: Icons.air_rounded,
           accent: const Color(0xFF26A69A),
-          progress: _clampProgress(windSpeed / 20),
+          progress: _clampProgress(windSpeedMps / 20),
         ),
         _MetricCard(
           width: cardWidth,

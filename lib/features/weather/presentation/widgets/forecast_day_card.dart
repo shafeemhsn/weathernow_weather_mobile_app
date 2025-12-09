@@ -8,6 +8,7 @@ class ForecastDayCard extends StatelessWidget {
   final double low;
   final String description;
   final String iconCode;
+  final String unitLabel;
 
   const ForecastDayCard({
     super.key,
@@ -16,6 +17,7 @@ class ForecastDayCard extends StatelessWidget {
     required this.low,
     required this.description,
     required this.iconCode,
+    required this.unitLabel,
   });
 
   @override
@@ -58,12 +60,12 @@ class ForecastDayCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${high.toStringAsFixed(0)}°C',
+                '${high.toStringAsFixed(0)}$unitLabel',
                 style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 2),
               Text(
-                '${low.toStringAsFixed(0)}°C',
+                '${low.toStringAsFixed(0)}$unitLabel',
                 style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
               ),
             ],

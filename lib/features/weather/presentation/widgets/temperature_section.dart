@@ -5,12 +5,14 @@ class TemperatureSection extends StatelessWidget {
   final double feelsLike;
   final String description;
   final Widget? icon;
+  final String unitLabel;
 
   const TemperatureSection({
     super.key,
     required this.temperature,
     required this.feelsLike,
     required this.description,
+    required this.unitLabel,
     this.icon,
   });
 
@@ -44,7 +46,7 @@ class TemperatureSection extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${temperature.toStringAsFixed(0)}°C',
+                  '${temperature.toStringAsFixed(0)}$unitLabel',
                   style: textTheme.headlineMedium?.copyWith(
                         fontSize: 52,
                         fontWeight: FontWeight.w700,
@@ -64,7 +66,7 @@ class TemperatureSection extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  'Feels like ${feelsLike.toStringAsFixed(0)}°C',
+                  'Feels like ${feelsLike.toStringAsFixed(0)}$unitLabel',
                   style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
                 ),
               ],

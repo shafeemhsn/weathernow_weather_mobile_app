@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/di/providers.dart';
 import '../../../../core/widgets/app_card.dart';
 import '../../data/repository/weather_repository_impl.dart';
 import '../../domain/entities/weather_entity.dart';
 import 'dynamic_weather_icon.dart';
 
-class CityWeatherCard extends StatefulWidget {
+class CityWeatherCard extends ConsumerStatefulWidget {
   const CityWeatherCard({
     super.key,
     required this.city,
@@ -28,10 +30,10 @@ class CityWeatherCard extends StatefulWidget {
   final Future<void> Function(String city, bool isFavorite)? onToggleFavorite;
 
   @override
-  State<CityWeatherCard> createState() => _CityWeatherCardState();
+  ConsumerState<CityWeatherCard> createState() => _CityWeatherCardState();
 }
 
-class _CityWeatherCardState extends State<CityWeatherCard> {
+class _CityWeatherCardState extends ConsumerState<CityWeatherCard> {
   late Future<WeatherEntity> _weatherFuture;
   bool? _isFavorite;
   bool _isFavoriteLoading = false;
@@ -128,6 +130,10 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
 
   Widget _content(BuildContext context, WeatherEntity weather) {
     final textTheme = Theme.of(context).textTheme;
+    final settings = ref.watch(settingsViewModelProvider).settings;
+    final useF = settings?.temperatureUnit == 'F';
+    final tempLabel = useF ? '°F' : '°C';
+    final temperature = useF ? _cToF(weather.temperature) : weather.temperature;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -185,7 +191,7 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${weather.temperature.toStringAsFixed(0)}°C',
+                  '${temperature.toStringAsFixed(0)}$tempLabel',
                   style: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
@@ -248,6 +254,8 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
       ],
     );
   }
+
+  double _cToF(double celsius) => (celsius * 9 / 5) + 32;
 
   String _sentenceCase(String text) {
     if (text.isEmpty) return '';

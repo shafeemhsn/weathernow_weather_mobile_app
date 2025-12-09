@@ -8,7 +8,6 @@ import '../../../../router/app_router.dart';
 import '../../../favorites/data/sources/favorites_local_source.dart';
 import '../../../recent_searches/domain/usecases/clear_recent_searches.dart';
 import '../widgets/about_section.dart';
-import '../widgets/app_preferences_section.dart';
 import '../widgets/data_management_section.dart';
 import '../widgets/unit_toggle_section.dart';
 
@@ -51,21 +50,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onWindChanged: viewModel.updateWindUnit,
                 ),
                 const SizedBox(height: 12),
-                AppPreferencesSection(
-                  autoLocation: viewModel.settings!.autoLocation,
-                  notifications: viewModel.settings!.notificationsEnabled,
-                  onAutoLocationChanged: viewModel.updateAutoLocation,
-                  onNotificationsChanged: viewModel.updateNotifications,
-                ),
-                const SizedBox(height: 12),
                 DataManagementSection(
                   onClearFavorites: _clearFavorites,
                   onClearRecentSearches: () =>
                       _clearRecentSearchesHandler(clearRecentSearches),
                   onClearAll: () => _clearAllData(clearRecentSearches),
                 ),
-                const SizedBox(height: 12),
-                const AboutSection(),
               ],
             ),
       bottomNavigationBar: AppBottomNavBar(

@@ -81,7 +81,7 @@ final recentSearchesViewModelProvider =
 final settingsViewModelProvider =
     ChangeNotifierProvider.autoDispose<SettingsViewModel>((ref) {
       final repo = ref.read(settingsRepositoryProvider);
-      return SettingsViewModel(
+      final viewModel = SettingsViewModel(
         GetSettings(repo),
         UpdateTemperatureUnit(repo),
         UpdateWindUnit(repo),
@@ -89,6 +89,9 @@ final settingsViewModelProvider =
         UpdateNotifications(repo),
         ClearAllData(repo),
       );
+      // Prime settings immediately so other screens can read saved prefs.
+      viewModel.load();
+      return viewModel;
     });
 
 final currentWeatherViewModelProvider =

@@ -9,6 +9,7 @@ import '../../../../router/app_router.dart';
 import '../../domain/entities/forecast_day_entity.dart';
 import '../widgets/city_not_found_card.dart';
 import '../widgets/forecast_day_card.dart';
+import '../../../settings/domain/entities/settings_entity.dart';
 
 class ForecastScreen extends ConsumerStatefulWidget {
   final String? city;
@@ -54,6 +55,7 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(forecastViewModelProvider);
+    final settings = ref.watch(settingsViewModelProvider).settings;
     final titleCity = widget.city ?? 'Unknown';
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +84,7 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
             ? const Center(child: CircularProgressIndicator())
             : viewModel.errorMessage != null
             ? _buildError(viewModel.errorMessage!)
-            : _buildList(viewModel.forecast),
+            : _buildList(viewModel.forecast, settings),
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
@@ -116,6 +118,11 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
 
   String _formatDate(ForecastDayEntity day) {
     return DateFormatter.formatShort(day.date);
+  }
+
+  double _convertTemp(double celsius, String unit) {
+    if (unit == 'F') return (celsius * 9 / 5) + 32;
+    return celsius;
   }
 
   Future<void> _toggleFavorite() async {
@@ -152,7 +159,9 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
     return ErrorStateWidget(message: message, onRetry: _load);
   }
 
-  Widget _buildList(List<ForecastDayEntity> forecast) {
+  Widget _buildList(List<ForecastDayEntity> forecast, SettingsEntity? settings) {
+    final tempUnit = settings?.temperatureUnit == 'F' ? 'F' : 'C';
+    final tempLabel = tempUnit == 'F' ? '°F' : '°C';
     final items = forecast.take(5).toList();
     if (items.isEmpty) {
       return const Center(child: Text('No forecast data'));
@@ -165,10 +174,11 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
         final day = items[index];
         return ForecastDayCard(
           dateLabel: _formatDate(day),
-          high: day.tempMax,
-          low: day.tempMin,
+          high: _convertTemp(day.tempMax, tempUnit),
+          low: _convertTemp(day.tempMin, tempUnit),
           description: day.description,
           iconCode: day.icon,
+          unitLabel: tempLabel,
         );
       },
     );

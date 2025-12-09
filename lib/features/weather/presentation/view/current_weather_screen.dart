@@ -7,6 +7,7 @@ import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../router/app_router.dart';
 import '../../domain/entities/weather_entity.dart';
+import '../../../settings/domain/entities/settings_entity.dart';
 import '../widgets/city_not_found_card.dart';
 import '../widgets/dynamic_weather_icon.dart';
 import '../widgets/metrics_grid.dart';
@@ -111,6 +112,7 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
   @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(currentWeatherViewModelProvider);
+    final settings = ref.watch(settingsViewModelProvider).settings;
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -124,7 +126,7 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
           ? const Center(child: CircularProgressIndicator())
           : viewModel.errorMessage != null
           ? _buildError(viewModel.errorMessage!)
-          : _buildContent(viewModel.weather),
+          : _buildContent(viewModel.weather, settings),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
         onTap: (index) {
@@ -149,6 +151,22 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
     }
   }
 
+  double _convertTemp(double celsius, String unit) {
+    if (unit == 'F') return (celsius * 9 / 5) + 32;
+    return celsius;
+  }
+
+  double _convertWind(double metersPerSecond, String unit) {
+    switch (unit) {
+      case 'km/h':
+        return metersPerSecond * 3.6;
+      case 'mph':
+        return metersPerSecond * 2.23694;
+      default:
+        return metersPerSecond;
+    }
+  }
+
   Widget _buildError(String message) {
     if (_isCityNotFound(message)) {
       return CityNotFoundCard(
@@ -159,12 +177,23 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
     return ErrorStateWidget(message: message, onRetry: _loadWeather);
   }
 
-  Widget _buildContent(WeatherEntity? weather) {
+  Widget _buildContent(WeatherEntity? weather, SettingsEntity? settings) {
     if (weather == null) {
       return const Center(child: Text('No weather data'));
     }
+    final tempUnit = settings?.temperatureUnit == 'F' ? 'F' : 'C';
+    final tempLabel = tempUnit == 'F' ? '°F' : '°C';
+    final windUnit = settings?.windUnit ?? 'km/h';
+    final displayTemp = _convertTemp(weather.temperature, tempUnit);
+    final displayFeelsLike = _convertTemp(weather.feelsLike, tempUnit);
+    final displayWind = _convertWind(weather.windSpeed, windUnit);
     return _WeatherContent(
       weather: weather,
+      temperatureValue: displayTemp,
+      feelsLikeValue: displayFeelsLike,
+      temperatureLabel: tempLabel,
+      windSpeedValue: displayWind,
+      windUnitLabel: windUnit,
       isFavorite: _isFavorite,
       onToggleFavorite: () => _toggleFavorite(weather.cityName),
       onViewForecast: () => Navigator.of(
@@ -176,12 +205,22 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
 
 class _WeatherContent extends StatelessWidget {
   final WeatherEntity weather;
+  final double temperatureValue;
+  final double feelsLikeValue;
+  final String temperatureLabel;
+  final double windSpeedValue;
+  final String windUnitLabel;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
   final VoidCallback onViewForecast;
 
   const _WeatherContent({
     required this.weather,
+    required this.temperatureValue,
+    required this.feelsLikeValue,
+    required this.temperatureLabel,
+    required this.windSpeedValue,
+    required this.windUnitLabel,
     required this.isFavorite,
     required this.onToggleFavorite,
     required this.onViewForecast,
@@ -245,9 +284,10 @@ class _WeatherContent extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             TemperatureSection(
-              temperature: weather.temperature,
-              feelsLike: weather.feelsLike,
+              temperature: temperatureValue,
+              feelsLike: feelsLikeValue,
               description: _sentenceCase(weather.description),
+              unitLabel: temperatureLabel,
               icon: IconTheme(
                 data: const IconThemeData(size: 70, color: Color(0xFF6B7A90)),
                 child: DynamicWeatherIcon(condition: weather.description),
@@ -256,10 +296,12 @@ class _WeatherContent extends StatelessWidget {
             const SizedBox(height: 16),
             MetricsGrid(
               humidity: weather.humidity,
-              windSpeed: weather.windSpeed,
+              windSpeed: windSpeedValue,
+              windSpeedMps: weather.windSpeed,
               windDirection: weather.windDirection,
               pressure: weather.pressure,
               visibility: weather.visibility,
+              windUnitLabel: windUnitLabel,
             ),
             const SizedBox(height: 20),
             SizedBox(
