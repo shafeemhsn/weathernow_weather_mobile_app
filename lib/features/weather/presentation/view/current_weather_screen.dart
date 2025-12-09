@@ -1,82 +1,50 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/network/dio_client.dart';
+import '../../../../core/di/providers.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../router/app_router.dart';
-import '../../../favourites/data/repository/favourites_repository_impl.dart';
-import '../../../favourites/data/sources/favourites_local_source.dart';
-import '../../../favourites/domain/usecases/add_favourite.dart';
-import '../../../favourites/domain/usecases/get_favourites.dart';
-import '../../../favourites/domain/usecases/is_favourite.dart';
-import '../../../favourites/domain/usecases/remove_favourite.dart';
-import '../../../favourites/presentation/viewmodel/favourites_viewmodel.dart';
-import '../../data/repository/weather_repository_impl.dart';
-import '../../data/sources/weather_api_service.dart';
 import '../../domain/entities/weather_entity.dart';
-import '../../domain/usecases/get_weather_by_city.dart';
-import '../../domain/usecases/get_weather_by_coords.dart';
-import '../../../recent_searches/data/repository/recent_searches_repository_impl.dart';
-import '../../../recent_searches/data/sources/recent_searches_local_source.dart';
-import '../../../recent_searches/domain/usecases/add_recent_search.dart';
 import '../viewmodel/current_weather_viewmodel.dart';
 import '../widgets/city_not_found_card.dart';
 import '../widgets/dynamic_weather_icon.dart';
 import '../widgets/metrics_grid.dart';
 import '../widgets/temperature_section.dart';
 
-class CurrentWeatherScreen extends StatefulWidget {
+class CurrentWeatherScreen extends ConsumerStatefulWidget {
   final String? city;
   final dynamic coords;
 
   const CurrentWeatherScreen({super.key, this.city, this.coords});
 
   @override
-  State<CurrentWeatherScreen> createState() => _CurrentWeatherScreenState();
+  ConsumerState<CurrentWeatherScreen> createState() => _CurrentWeatherScreenState();
 }
 
-class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
-  late final CurrentWeatherViewModel _viewModel;
-  late final FavouritesViewModel _favouritesViewModel;
-  late final AddRecentSearch _addRecentSearch;
+class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
   bool _isFavourite = false;
 
   @override
   void initState() {
     super.initState();
-    final weatherRepo = WeatherRepositoryImpl(WeatherApiService(DioClient()));
-    _viewModel = CurrentWeatherViewModel(
-      GetWeatherByCity(weatherRepo),
-      GetWeatherByCoords(weatherRepo),
-    );
-
-    final favRepo = FavouritesRepositoryImpl(FavouritesLocalSource());
-    _favouritesViewModel = FavouritesViewModel(
-      GetFavourites(favRepo),
-      AddFavourite(favRepo),
-      RemoveFavourite(favRepo),
-      IsFavourite(favRepo),
-    );
-
-    final recentRepo = RecentSearchesRepositoryImpl(RecentSearchesLocalSource());
-    _addRecentSearch = AddRecentSearch(recentRepo);
-
-    _loadWeather();
+    Future.microtask(_loadWeather);
   }
 
   Future<void> _loadWeather() async {
+    final viewModel = ref.read(currentWeatherViewModelProvider);
     if (widget.city != null && widget.city!.isNotEmpty) {
-      await _viewModel.loadByCity(widget.city!);
+      await viewModel.loadByCity(widget.city!);
     } else if (widget.coords != null) {
       final coords = _parseCoords(widget.coords);
       if (coords != null) {
-        await _viewModel.loadByCoords(coords.$1, coords.$2);
+        await viewModel.loadByCoords(coords.$1, coords.$2);
       }
     }
-    final cityName = _viewModel.weather?.cityName;
+    final cityName = viewModel.weather?.cityName;
     if (cityName != null && cityName.isNotEmpty) {
-      await _addRecentSearch.call(cityName);
-      _isFavourite = await _favouritesViewModel.isFavourite(cityName);
+      await ref.read(addRecentSearchProvider).call(cityName);
+      _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(cityName);
       if (mounted) setState(() {});
     }
   }
@@ -114,16 +82,17 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
 
   Future<void> _toggleFavourite(String city) async {
     if (_isFavourite) {
-      await _favouritesViewModel.remove(city);
+      await ref.read(favouritesViewModelProvider).remove(city);
     } else {
-      await _favouritesViewModel.add(city);
+      await ref.read(favouritesViewModelProvider).add(city);
     }
-    _isFavourite = await _favouritesViewModel.isFavourite(city);
+    _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(city);
     if (mounted) setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = ref.watch(currentWeatherViewModelProvider);
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
@@ -133,37 +102,11 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
         ),
         title: const Text('Weather'),
       ),
-      body: AnimatedBuilder(
-        animation: _viewModel,
-        builder: (context, _) {
-          if (_viewModel.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (_viewModel.errorMessage != null) {
-            final message = _viewModel.errorMessage!;
-            if (_isCityNotFound(message)) {
-              return CityNotFoundCard(
-                city: widget.city,
-                onSearchAgain: _goBackToSearch,
-              );
-            }
-            return ErrorStateWidget(message: message, onRetry: _loadWeather);
-          }
-          final weather = _viewModel.weather;
-          if (weather == null) {
-            return const Center(child: Text('No weather data'));
-          }
-          return _WeatherContent(
-            weather: weather,
-            isFavourite: _isFavourite,
-            onToggleFavourite: () => _toggleFavourite(weather.cityName),
-            onViewForecast: () => Navigator.of(context).pushNamed(
-              AppRouter.forecast,
-              arguments: {'city': weather.cityName},
-            ),
-          );
-        },
-      ),
+      body: viewModel.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : viewModel.errorMessage != null
+              ? _buildError(viewModel.errorMessage!)
+              : _buildContent(viewModel.weather),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
         onTap: (index) {
@@ -188,11 +131,29 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _viewModel.dispose();
-    _favouritesViewModel.dispose();
-    super.dispose();
+  Widget _buildError(String message) {
+    if (_isCityNotFound(message)) {
+      return CityNotFoundCard(
+        city: widget.city,
+        onSearchAgain: _goBackToSearch,
+      );
+    }
+    return ErrorStateWidget(message: message, onRetry: _loadWeather);
+  }
+
+  Widget _buildContent(WeatherEntity? weather) {
+    if (weather == null) {
+      return const Center(child: Text('No weather data'));
+    }
+    return _WeatherContent(
+      weather: weather,
+      isFavourite: _isFavourite,
+      onToggleFavourite: () => _toggleFavourite(weather.cityName),
+      onViewForecast: () => Navigator.of(context).pushNamed(
+        AppRouter.forecast,
+        arguments: {'city': weather.cityName},
+      ),
+    );
   }
 }
 
