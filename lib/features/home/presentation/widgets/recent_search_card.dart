@@ -57,8 +57,6 @@ class RecentSearchCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _header(context),
-        const SizedBox(height: 8),
         const Text('Unable to load weather right now'),
         const SizedBox(height: 12),
         _actions(context, disabledForecast: true),
@@ -72,8 +70,6 @@ class RecentSearchCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _header(context),
-        const SizedBox(height: 8),
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -126,16 +122,6 @@ class RecentSearchCard extends StatelessWidget {
         const SizedBox(height: 12),
         _actions(context),
       ],
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Text(
-        search.name,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-      ),
     );
   }
 
