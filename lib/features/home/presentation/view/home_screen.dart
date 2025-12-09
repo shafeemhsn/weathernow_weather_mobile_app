@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/app_brand.dart';
 import '../../../../router/app_router.dart';
 import '../widgets/city_search_bar.dart';
+import '../widgets/current_location_card.dart';
 import '../widgets/recent_searches_list.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -60,6 +61,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final recentSearchesViewModel = ref.watch(recentSearchesViewModelProvider);
     final weatherRepository = ref.read(weatherRepositoryProvider);
+    final settings = ref.watch(settingsViewModelProvider).settings;
+    final autoLocationEnabled = settings?.autoLocation ?? true;
     return Scaffold(
       appBar: AppBar(automaticallyImplyLeading: false, title: const AppBrand()),
       body: SingleChildScrollView(
@@ -69,6 +72,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             CitySearchBar(onSearchCompleted: _refreshRecent),
             const SizedBox(height: 24),
+            if (autoLocationEnabled) ...[
+              CurrentLocationCard(
+                repository: weatherRepository,
+                isFavoriteProvider: _isFavorite,
+                onToggleFavorite: _toggleFavorite,
+              ),
+              const SizedBox(height: 24),
+            ],
             Text(
               'Recently searched',
               style: Theme.of(context).textTheme.titleMedium,

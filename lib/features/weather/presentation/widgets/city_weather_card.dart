@@ -12,22 +12,28 @@ class CityWeatherCard extends ConsumerStatefulWidget {
     super.key,
     required this.city,
     required this.repository,
-    required this.onRemove,
     required this.onOpenDetails,
     required this.onOpenForecast,
+    this.onRemove,
+    this.showRemoveAction = true,
     this.showFavoriteAction = false,
     this.isFavoriteProvider,
     this.onToggleFavorite,
+    this.initialWeather,
+    this.coords,
   });
 
   final String city;
   final WeatherRepositoryImpl repository;
-  final VoidCallback onRemove;
+  final VoidCallback? onRemove;
   final VoidCallback onOpenDetails;
   final VoidCallback onOpenForecast;
+  final bool showRemoveAction;
   final bool showFavoriteAction;
   final Future<bool> Function(String city)? isFavoriteProvider;
   final Future<void> Function(String city, bool isFavorite)? onToggleFavorite;
+  final WeatherEntity? initialWeather;
+  final (double, double)? coords;
 
   @override
   ConsumerState<CityWeatherCard> createState() => _CityWeatherCardState();
@@ -41,7 +47,7 @@ class _CityWeatherCardState extends ConsumerState<CityWeatherCard> {
   @override
   void initState() {
     super.initState();
-    _weatherFuture = widget.repository.getWeatherByCity(widget.city);
+    _weatherFuture = _resolveWeatherFuture();
     _loadFavoriteStatus();
   }
 
@@ -49,12 +55,27 @@ class _CityWeatherCardState extends ConsumerState<CityWeatherCard> {
   void didUpdateWidget(covariant CityWeatherCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.city != widget.city ||
-        oldWidget.repository != widget.repository) {
-      _weatherFuture = widget.repository.getWeatherByCity(widget.city);
+        oldWidget.repository != widget.repository ||
+        oldWidget.initialWeather != widget.initialWeather ||
+        oldWidget.coords != widget.coords) {
+      _weatherFuture = _resolveWeatherFuture();
     }
-    if (oldWidget.city != widget.city && widget.showFavoriteAction) {
+    if ((oldWidget.city != widget.city ||
+        oldWidget.showFavoriteAction != widget.showFavoriteAction) &&
+        widget.showFavoriteAction) {
       _loadFavoriteStatus();
     }
+  }
+
+  Future<WeatherEntity> _resolveWeatherFuture() {
+    if (widget.initialWeather != null) {
+      return Future.value(widget.initialWeather);
+    }
+    final coords = widget.coords;
+    if (coords != null) {
+      return widget.repository.getWeatherByCoords(coords.$1, coords.$2);
+    }
+    return widget.repository.getWeatherByCity(widget.city);
   }
 
   Future<void> _loadFavoriteStatus() async {
@@ -164,16 +185,17 @@ class _CityWeatherCardState extends ConsumerState<CityWeatherCard> {
                     ),
                     onPressed:
                         (_isFavoriteLoading || widget.onToggleFavorite == null)
-                        ? null
-                        : _handleToggleFavorite,
+                            ? null
+                            : _handleToggleFavorite,
                   ),
-                IconButton(
-                  icon: const Icon(
-                    Icons.delete_outline,
-                    color: Colors.redAccent,
+                if (widget.showRemoveAction && widget.onRemove != null)
+                  IconButton(
+                    icon: const Icon(
+                      Icons.delete_outline,
+                      color: Colors.redAccent,
+                    ),
+                    onPressed: widget.onRemove,
                   ),
-                  onPressed: widget.onRemove,
-                ),
               ],
             ),
           ],
