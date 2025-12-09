@@ -22,19 +22,20 @@ class ForecastDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final iconData = _mapIcon(iconCode);
+    final accent = _toneFor(description);
 
     return AppCard(
-      accent: const Color(0xFF6C8BFF),
+      accent: accent,
       padding: const EdgeInsets.all(18),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFF6C8BFF).withOpacity(0.14),
+              color: accent.withOpacity(0.14),
               shape: BoxShape.circle,
             ),
-            child: Icon(iconData, size: 30, color: const Color(0xFF3F5FBF)),
+            child: Icon(iconData, size: 30, color: accent),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -86,5 +87,15 @@ class ForecastDayCard extends StatelessWidget {
     if (text.isEmpty) return '';
     final lower = text.toLowerCase();
     return lower[0].toUpperCase() + lower.substring(1);
+  }
+
+  Color _toneFor(String description) {
+    final lower = description.toLowerCase();
+    if (lower.contains('thunder')) return const Color(0xFF6C63FF);
+    if (lower.contains('rain') || lower.contains('drizzle')) return const Color(0xFF1E88E5);
+    if (lower.contains('snow')) return const Color(0xFF90CAF9);
+    if (lower.contains('cloud')) return const Color(0xFF546E7A);
+    if (lower.contains('clear')) return const Color(0xFFFFB300);
+    return const Color(0xFF00838F);
   }
 }
