@@ -45,7 +45,7 @@ class AppDatabase {
         last_temp REAL,
         last_condition TEXT,
         created_at TEXT NOT NULL,
-        updated_at TEXT NOT NULL
+      updated_at TEXT NOT NULL
       );
     ''');
 
@@ -76,51 +76,5 @@ class AppDatabase {
   Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     // Placeholder for future schema migrations.
     // Add conditional migration logic when bumping _dbVersion.
-  }
-
-  /// Inserts a favourite city row and returns the generated id.
-  Future<int> insertFavourite(Map<String, dynamic> data) async {
-    final db = await database;
-    return db.insert(favouritesTable, data);
-  }
-
-  /// Retrieves all favourite cities.
-  Future<List<Map<String, dynamic>>> getFavourites() async {
-    final db = await database;
-    return db.query(favouritesTable, orderBy: 'created_at DESC');
-  }
-
-  /// Deletes a favourite city by id.
-  Future<int> deleteFavourite(int id) async {
-    final db = await database;
-    return db.delete(
-      favouritesTable,
-      where: 'id = ?',
-      whereArgs: [id],
-    );
-  }
-
-  /// Fetches the single settings row (id = 1).
-  Future<Map<String, dynamic>?> getSettings() async {
-    final db = await database;
-    final result = await db.query(
-      settingsTable,
-      where: 'id = ?',
-      whereArgs: [1],
-      limit: 1,
-    );
-    if (result.isEmpty) return null;
-    return result.first;
-  }
-
-  /// Updates the settings row (id = 1) and returns the number of rows affected.
-  Future<int> updateSettings(Map<String, dynamic> data) async {
-    final db = await database;
-    return db.update(
-      settingsTable,
-      data,
-      where: 'id = ?',
-      whereArgs: [1],
-    );
   }
 }
