@@ -16,6 +16,9 @@ import '../widgets/about_section.dart';
 import '../widgets/app_preferences_section.dart';
 import '../widgets/data_management_section.dart';
 import '../widgets/unit_toggle_section.dart';
+import '../../../recent_searches/data/repository/recent_searches_repository_impl.dart';
+import '../../../recent_searches/data/sources/recent_searches_local_source.dart';
+import '../../../recent_searches/domain/usecases/clear_recent_searches.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -27,6 +30,7 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   late final SettingsViewModel _viewModel;
   final _favouritesSource = FavouritesLocalSource();
+  late final ClearRecentSearches _clearRecentSearches;
 
   @override
   void initState() {
@@ -40,6 +44,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       UpdateNotifications(repository),
       ClearAllData(repository),
     );
+    final recentsRepo = RecentSearchesRepositoryImpl(RecentSearchesLocalSource());
+    _clearRecentSearches = ClearRecentSearches(recentsRepo);
     _viewModel.load();
   }
 
@@ -77,6 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 12),
               DataManagementSection(
                 onClearFavorites: _clearFavorites,
+                onClearRecentSearches: _clearRecentSearchesHandler,
                 onClearAll: _clearAllData,
               ),
               const SizedBox(height: 12),
@@ -111,9 +118,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
   }
 
+  Future<void> _clearRecentSearchesHandler() async {
+    await _clearRecentSearches.call();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Recent searches cleared')),
+      );
+    }
+  }
+
   Future<void> _clearAllData() async {
     await _viewModel.clear();
     await _favouritesSource.clear();
+    await _clearRecentSearches.call();
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('All data cleared')),

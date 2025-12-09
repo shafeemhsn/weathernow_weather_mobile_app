@@ -16,6 +16,9 @@ import '../../data/sources/weather_api_service.dart';
 import '../../domain/entities/weather_entity.dart';
 import '../../domain/usecases/get_weather_by_city.dart';
 import '../../domain/usecases/get_weather_by_coords.dart';
+import '../../../recent_searches/data/repository/recent_searches_repository_impl.dart';
+import '../../../recent_searches/data/sources/recent_searches_local_source.dart';
+import '../../../recent_searches/domain/usecases/add_recent_search.dart';
 import '../viewmodel/current_weather_viewmodel.dart';
 import '../widgets/city_not_found_card.dart';
 import '../widgets/dynamic_weather_icon.dart';
@@ -35,6 +38,7 @@ class CurrentWeatherScreen extends StatefulWidget {
 class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
   late final CurrentWeatherViewModel _viewModel;
   late final FavouritesViewModel _favouritesViewModel;
+  late final AddRecentSearch _addRecentSearch;
   bool _isFavourite = false;
 
   @override
@@ -54,6 +58,9 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
       IsFavourite(favRepo),
     );
 
+    final recentRepo = RecentSearchesRepositoryImpl(RecentSearchesLocalSource());
+    _addRecentSearch = AddRecentSearch(recentRepo);
+
     _loadWeather();
   }
 
@@ -68,6 +75,7 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
     }
     final cityName = _viewModel.weather?.cityName;
     if (cityName != null && cityName.isNotEmpty) {
+      await _addRecentSearch.call(cityName);
       _isFavourite = await _favouritesViewModel.isFavourite(cityName);
       if (mounted) setState(() {});
     }

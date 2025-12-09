@@ -4,7 +4,9 @@ import '../../../../core/constants/app_strings.dart';
 import '../../../../router/app_router.dart';
 
 class CitySearchBar extends StatelessWidget {
-  const CitySearchBar({super.key});
+  final Future<void> Function()? onSearchCompleted;
+
+  const CitySearchBar({super.key, this.onSearchCompleted});
 
   @override
   Widget build(BuildContext context) {
@@ -14,9 +16,12 @@ class CitySearchBar extends StatelessWidget {
         hintText: AppStrings.searchCityHint,
         border: OutlineInputBorder(),
       ),
-      onSubmitted: (value) {
+      onSubmitted: (value) async {
         if (value.isNotEmpty) {
-          Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': value});
+          await Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': value});
+          if (onSearchCompleted != null) {
+            await onSearchCompleted!.call();
+          }
         }
       },
     );
