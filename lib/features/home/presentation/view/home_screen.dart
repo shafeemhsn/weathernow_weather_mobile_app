@@ -93,21 +93,10 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
         onTap: (index) {
-          switch (index) {
-            case 0:
-              return;
-            case 1:
-              Navigator.of(context).pushReplacementNamed(AppRouter.weather);
-              break;
-            case 2:
-              Navigator.of(context).pushReplacementNamed(AppRouter.forecast);
-              break;
-            case 3:
-              Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
-              break;
-            case 4:
-              Navigator.of(context).pushReplacementNamed(AppRouter.settings);
-              break;
+          if (index == 1) {
+            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
+          } else if (index == 2) {
+            Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
       ),

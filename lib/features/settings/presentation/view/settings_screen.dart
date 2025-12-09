@@ -93,15 +93,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         },
       ),
       bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 4,
+        currentIndex: 2,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.weather);
-          } else if (index == 2) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.forecast);
-          } else if (index == 3) {
             Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
           }
         },

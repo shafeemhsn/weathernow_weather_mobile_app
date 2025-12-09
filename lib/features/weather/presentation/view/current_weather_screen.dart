@@ -127,6 +127,10 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _handleBack,
+        ),
         title: const Text('Weather'),
       ),
       body: AnimatedBuilder(
@@ -161,30 +165,27 @@ class _CurrentWeatherScreenState extends State<CurrentWeatherScreen> {
         },
       ),
       bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 1,
+        currentIndex: 0,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
-          } else if (index == 2) {
-            final city = _viewModel.weather?.cityName;
-            if (city != null && city.isNotEmpty) {
-              Navigator.of(context).pushReplacementNamed(
-                AppRouter.forecast,
-                arguments: {'city': city},
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Load a city to view forecast')),
-              );
-            }
-          } else if (index == 3) {
+          } else if (index == 1) {
             Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
-          } else if (index == 4) {
+          } else if (index == 2) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
       ),
     );
+  }
+
+  void _handleBack() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+    } else {
+      navigator.pushReplacementNamed(AppRouter.home);
+    }
   }
 
   @override

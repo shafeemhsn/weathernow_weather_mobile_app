@@ -85,26 +85,11 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
         },
       ),
       bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 3,
+        currentIndex: 1,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
-          } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.weather);
           } else if (index == 2) {
-            final firstCity =
-                _viewModel.favourites.isNotEmpty ? _viewModel.favourites.first.name : null;
-            if (firstCity != null) {
-              Navigator.of(context).pushReplacementNamed(
-                AppRouter.forecast,
-                arguments: {'city': firstCity},
-              );
-            } else {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Add a favourite to view its forecast')),
-              );
-            }
-          } else if (index == 4) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },

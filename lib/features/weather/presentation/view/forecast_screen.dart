@@ -75,6 +75,10 @@ class _ForecastScreenState extends State<ForecastScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: _goBackToSearch,
+        ),
         title: Text('Forecast: ${_headerLocation ?? titleCity}'),
         actions: [
           IconButton(
@@ -130,18 +134,13 @@ class _ForecastScreenState extends State<ForecastScreen> {
         ),
       ),
       bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 2,
+        currentIndex: 0,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(
-              AppRouter.weather,
-              arguments: widget.city != null ? {'city': widget.city} : null,
-            );
-          } else if (index == 3) {
             Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
-          } else if (index == 4) {
+          } else if (index == 2) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
         },
