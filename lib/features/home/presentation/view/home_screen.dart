@@ -22,7 +22,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Future.microtask(() => ref.read(recentSearchesViewModelProvider).load());
   }
 
-  Future<void> _refreshRecents() async {
+  Future<void> _refreshRecent() async {
     await ref.read(recentSearchesViewModelProvider).load();
   }
 
@@ -30,14 +30,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await Navigator.of(
       context,
     ).pushNamed(AppRouter.weather, arguments: {'city': city});
-    await _refreshRecents();
+    await _refreshRecent();
   }
 
   Future<void> _openForecast(String city) async {
     await Navigator.of(
       context,
     ).pushNamed(AppRouter.forecast, arguments: {'city': city});
-    await _refreshRecents();
+    await _refreshRecent();
   }
 
   Future<void> _removeRecent(String city) async {
@@ -67,7 +67,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CitySearchBar(onSearchCompleted: _refreshRecents),
+            CitySearchBar(onSearchCompleted: _refreshRecent),
             const SizedBox(height: 24),
             Text(
               'Recently searched',
