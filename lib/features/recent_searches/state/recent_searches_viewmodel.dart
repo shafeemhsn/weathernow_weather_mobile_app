@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/recent_search.dart';
-import '../../domain/usecases/clear_recent_searches.dart';
-import '../../domain/usecases/get_recent_searches.dart';
-import '../../domain/usecases/remove_recent_search.dart';
+import '../domain/entities/recent_search.dart';
+import '../domain/usecases/clear_recent_searches.dart';
+import '../domain/usecases/get_recent_searches.dart';
+import '../domain/usecases/remove_recent_search.dart';
 
 class RecentSearchesViewModel extends ChangeNotifier {
   RecentSearchesViewModel(this._getRecents, this._clearRecents, this._removeRecent);

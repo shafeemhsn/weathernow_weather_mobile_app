@@ -1,0 +1,13 @@
+export 'data/models/favourite_city_model.dart';
+export 'data/repository/favourites_repository_impl.dart';
+export 'data/sources/favourites_local_source.dart';
+export 'domain/entities/favourite_city.dart';
+export 'domain/repository/favourites_repository.dart';
+export 'domain/usecases/add_favourite.dart';
+export 'domain/usecases/get_favourites.dart';
+export 'domain/usecases/is_favourite.dart';
+export 'domain/usecases/remove_favourite.dart';
+export 'presentation/view/favourites_screen.dart';
+export 'presentation/widgets/favourite_weather_card.dart';
+export 'presentation/widgets/favourites_search_field.dart';
+export 'state/favourites_viewmodel.dart';

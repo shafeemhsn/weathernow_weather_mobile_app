@@ -119,13 +119,23 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
   Future<void> _toggleFavourite() async {
     final city = widget.city;
     if (city == null || city.isEmpty) return;
-    if (_isFavourite) {
-      await ref.read(favouritesViewModelProvider).remove(city);
-    } else {
-      await ref.read(favouritesViewModelProvider).add(city);
+    final target = !_isFavourite;
+    if (mounted) {
+      setState(() {
+        _isFavourite = target;
+      });
     }
-    _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(city);
-    if (mounted) setState(() {});
+    if (target) {
+      await ref.read(favouritesViewModelProvider).add(city);
+    } else {
+      await ref.read(favouritesViewModelProvider).remove(city);
+    }
+    final persisted = await ref.read(favouritesViewModelProvider).isFavourite(city);
+    if (mounted) {
+      setState(() {
+        _isFavourite = persisted;
+      });
+    }
   }
 
   Widget _buildError(String message) {

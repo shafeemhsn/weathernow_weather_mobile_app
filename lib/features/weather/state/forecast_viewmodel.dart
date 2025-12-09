@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/forecast_day_entity.dart';
-import '../../domain/usecases/get_forecast_by_city.dart';
+import '../domain/entities/forecast_day_entity.dart';
+import '../domain/usecases/get_forecast_by_city.dart';
 
 class ForecastViewModel extends ChangeNotifier {
   ForecastViewModel(this._useCase);

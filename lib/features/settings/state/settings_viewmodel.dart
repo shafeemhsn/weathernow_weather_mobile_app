@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/settings_entity.dart';
-import '../../domain/usecases/clear_all_data.dart';
-import '../../domain/usecases/get_settings.dart';
-import '../../domain/usecases/update_auto_location.dart';
-import '../../domain/usecases/update_notifications.dart';
-import '../../domain/usecases/update_temperature_unit.dart';
-import '../../domain/usecases/update_wind_unit.dart';
+import '../domain/entities/settings_entity.dart';
+import '../domain/usecases/clear_all_data.dart';
+import '../domain/usecases/get_settings.dart';
+import '../domain/usecases/update_auto_location.dart';
+import '../domain/usecases/update_notifications.dart';
+import '../domain/usecases/update_temperature_unit.dart';
+import '../domain/usecases/update_wind_unit.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   SettingsViewModel(

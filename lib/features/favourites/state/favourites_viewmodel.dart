@@ -1,10 +1,10 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/favourite_city.dart';
-import '../../domain/usecases/add_favourite.dart';
-import '../../domain/usecases/get_favourites.dart';
-import '../../domain/usecases/is_favourite.dart';
-import '../../domain/usecases/remove_favourite.dart';
+import '../domain/entities/favourite_city.dart';
+import '../domain/usecases/add_favourite.dart';
+import '../domain/usecases/get_favourites.dart';
+import '../domain/usecases/is_favourite.dart';
+import '../domain/usecases/remove_favourite.dart';
 
 class FavouritesViewModel extends ChangeNotifier {
   FavouritesViewModel(this._get, this._add, this._remove, this._isFavourite);

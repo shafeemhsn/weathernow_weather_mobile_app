@@ -1,0 +1,10 @@
+export 'data/models/recent_search_model.dart';
+export 'data/repository/recent_searches_repository_impl.dart';
+export 'data/sources/recent_searches_local_source.dart';
+export 'domain/entities/recent_search.dart';
+export 'domain/repository/recent_searches_repository.dart';
+export 'domain/usecases/add_recent_search.dart';
+export 'domain/usecases/clear_recent_searches.dart';
+export 'domain/usecases/get_recent_searches.dart';
+export 'domain/usecases/remove_recent_search.dart';
+export 'state/recent_searches_viewmodel.dart';

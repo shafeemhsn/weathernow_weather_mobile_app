@@ -6,7 +6,6 @@ import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/error_state_widget.dart';
 import '../../../../router/app_router.dart';
 import '../../domain/entities/weather_entity.dart';
-import '../viewmodel/current_weather_viewmodel.dart';
 import '../widgets/city_not_found_card.dart';
 import '../widgets/dynamic_weather_icon.dart';
 import '../widgets/metrics_grid.dart';
@@ -32,6 +31,7 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
   }
 
   Future<void> _loadWeather() async {
+    _isFavourite = false;
     final viewModel = ref.read(currentWeatherViewModelProvider);
     if (widget.city != null && widget.city!.isNotEmpty) {
       await viewModel.loadByCity(widget.city!);
@@ -81,13 +81,23 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
   }
 
   Future<void> _toggleFavourite(String city) async {
-    if (_isFavourite) {
-      await ref.read(favouritesViewModelProvider).remove(city);
-    } else {
-      await ref.read(favouritesViewModelProvider).add(city);
+    final target = !_isFavourite;
+    if (mounted) {
+      setState(() {
+        _isFavourite = target;
+      });
     }
-    _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(city);
-    if (mounted) setState(() {});
+    if (target) {
+      await ref.read(favouritesViewModelProvider).add(city);
+    } else {
+      await ref.read(favouritesViewModelProvider).remove(city);
+    }
+    final persisted = await ref.read(favouritesViewModelProvider).isFavourite(city);
+    if (mounted) {
+      setState(() {
+        _isFavourite = persisted;
+      });
+    }
   }
 
   @override

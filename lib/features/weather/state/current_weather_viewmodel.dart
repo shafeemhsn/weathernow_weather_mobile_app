@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 
-import '../../domain/entities/weather_entity.dart';
-import '../../domain/usecases/get_weather_by_city.dart';
-import '../../domain/usecases/get_weather_by_coords.dart';
+import '../domain/entities/weather_entity.dart';
+import '../domain/usecases/get_weather_by_city.dart';
+import '../domain/usecases/get_weather_by_coords.dart';
 
 class CurrentWeatherViewModel extends ChangeNotifier {
   CurrentWeatherViewModel(this._byCity, this._byCoords);
