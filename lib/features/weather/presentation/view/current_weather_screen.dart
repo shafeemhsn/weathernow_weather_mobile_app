@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../core/widgets/error_state_widget.dart';
@@ -117,7 +118,7 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
           icon: const Icon(Icons.arrow_back),
           onPressed: _handleBack,
         ),
-        title: const Text('Weather'),
+        title: const Text(AppStrings.weatherTitle),
       ),
       body: viewModel.isLoading
           ? const Center(child: CircularProgressIndicator())

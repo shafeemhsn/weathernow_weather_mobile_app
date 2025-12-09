@@ -8,11 +8,12 @@
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:weathernow_weather_mobile_app/app.dart';
+import 'package:weathernow_weather_mobile_app/core/constants/app_strings.dart';
 
 void main() {
   testWidgets('Home screen renders app title', (WidgetTester tester) async {
     await tester.pumpWidget(const WeatherNowApp());
 
-    expect(find.text('WeatherNow'), findsWidgets);
+    expect(find.text(AppStrings.appName), findsWidgets);
   });
 }

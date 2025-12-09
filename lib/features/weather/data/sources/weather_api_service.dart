@@ -9,20 +9,29 @@ class WeatherApiService {
   final DioClient _client;
 
   Future<WeatherModel> fetchWeatherByCity(String city) async {
-    final json = await _client.get(ApiConstants.currentWeatherPath, queryParameters: {'q': city});
+    final json = await _client.get(
+      ApiConstants.currentWeatherPath,
+      queryParameters: {ApiConstants.cityQuery: city},
+    );
     return WeatherModel.fromJson(json);
   }
 
   Future<WeatherModel> fetchWeatherByCoords(double lat, double lon) async {
     final json = await _client.get(
       ApiConstants.currentWeatherPath,
-      queryParameters: {'lat': lat, 'lon': lon},
+      queryParameters: {
+        ApiConstants.latQuery: lat,
+        ApiConstants.lonQuery: lon,
+      },
     );
     return WeatherModel.fromJson(json);
   }
 
   Future<List<ForecastModel>> fetchForecastByCity(String city) async {
-    final json = await _client.get(ApiConstants.forecastPath, queryParameters: {'q': city});
+    final json = await _client.get(
+      ApiConstants.forecastPath,
+      queryParameters: {ApiConstants.cityQuery: city},
+    );
     final List<dynamic> items = json['list'] as List<dynamic>? ?? <dynamic>[];
     return items.map((item) => ForecastModel.fromJson(item as Map<String, dynamic>)).toList();
   }

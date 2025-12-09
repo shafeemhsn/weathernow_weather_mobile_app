@@ -26,8 +26,8 @@ class DioClient {
     }
 
     final params = <String, dynamic>{
-      'appid': Env.apiKey,
-      'units': ApiConstants.defaultUnits,
+      ApiConstants.apiKeyQuery: Env.apiKey,
+      ApiConstants.unitsQuery: ApiConstants.defaultUnits,
       ...?queryParameters,
     };
 

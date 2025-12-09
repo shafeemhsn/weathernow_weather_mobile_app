@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants/app_strings.dart';
+
 class AppBottomNavBar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
@@ -16,9 +18,12 @@ class AppBottomNavBar extends StatelessWidget {
       currentIndex: currentIndex,
       onTap: onTap,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-        BottomNavigationBarItem(icon: Icon(Icons.favorite), label: 'Favorites'),
-        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.home), label: AppStrings.homeTitle),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.favorite), label: AppStrings.favoritesTitle),
+        BottomNavigationBarItem(
+            icon: Icon(Icons.settings), label: AppStrings.settingsTitle),
       ],
     );
   }

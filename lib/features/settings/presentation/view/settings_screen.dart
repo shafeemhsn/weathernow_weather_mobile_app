@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/constants/app_strings.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../router/app_router.dart';
@@ -35,7 +36,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Settings'),
+        title: const Text(AppStrings.settingsTitle),
       ),
       body: viewModel.settings == null
           ? const Center(child: CircularProgressIndicator())
