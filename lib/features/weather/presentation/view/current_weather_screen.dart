@@ -277,13 +277,13 @@ class _WeatherContent extends StatelessWidget {
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
-              child: FilledButton.icon(
+              child: OutlinedButton.icon(
                 onPressed: onViewForecast,
                 icon: const Icon(Icons.calendar_month_outlined),
                 label: const Text('View 5-day forecast'),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
               ),
             ),
