@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
+import '../../../../core/widgets/app_brand.dart';
 import '../../../../router/app_router.dart';
 import '../widgets/city_search_bar.dart';
 import '../widgets/recent_searches_list.dart';
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text(AppStrings.appName),
+        title: const AppBrand(),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),

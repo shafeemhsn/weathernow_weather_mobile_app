@@ -64,29 +64,25 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
                 Expanded(
                   child: favourites.isEmpty
                       ? const Center(child: Text('No favourites yet. Add some cities!'))
-                      : GridView.builder(
-                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            childAspectRatio: 0.9,
-                            crossAxisSpacing: 8,
-                            mainAxisSpacing: 8,
-                          ),
+                      : ListView.separated(
                           itemCount: favourites.length,
+                          separatorBuilder: (_, __) => const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final favourite = favourites[index];
                             return FavouriteWeatherCard(
                               city: favourite.name,
                               repository: _weatherRepository,
                               onRemove: () => _remove(favourite),
-                              onTap: () => _openDetails(favourite),
+                              onOpenDetails: () => _openDetails(favourite),
+                              onOpenForecast: () => _openForecast(favourite.name),
                             );
                           },
                         ),
                 ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );
+        },
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 3,
@@ -120,8 +116,18 @@ class _FavouritesScreenState extends State<FavouritesScreen> {
     await _viewModel.remove(city.name);
   }
 
-  void _openDetails(FavouriteCity city) {
-    Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': city.name});
+  Future<void> _openDetails(FavouriteCity city) async {
+    await Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': city.name});
+    await _refresh();
+  }
+
+  Future<void> _openForecast(String city) async {
+    await Navigator.of(context).pushNamed(AppRouter.forecast, arguments: {'city': city});
+    await _refresh();
+  }
+
+  Future<void> _refresh() async {
+    await _viewModel.load(query: _viewModel.searchQuery);
   }
 
   @override
