@@ -65,16 +65,7 @@ class _CitySearchBarState extends State<CitySearchBar> {
             decoration: InputDecoration(
               prefixIcon: const Icon(Icons.search),
               hintText: AppStrings.searchCityHint,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.blue),
-              ),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             ),
             onSubmitted: _performSearch,
           ),
