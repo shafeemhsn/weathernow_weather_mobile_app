@@ -10,8 +10,8 @@ class RecentSearchesList extends StatelessWidget {
   final ValueChanged<String> onSelect;
   final ValueChanged<String> onRemove;
   final ValueChanged<String> onForecast;
-  final Future<bool> Function(String city)? isFavouriteProvider;
-  final Future<void> Function(String city, bool isFavourite)? onToggleFavourite;
+  final Future<bool> Function(String city)? isFavoriteProvider;
+  final Future<void> Function(String city, bool isFavorite)? onToggleFavorite;
 
   const RecentSearchesList({
     super.key,
@@ -20,8 +20,8 @@ class RecentSearchesList extends StatelessWidget {
     required this.onSelect,
     required this.onRemove,
     required this.onForecast,
-    this.isFavouriteProvider,
-    this.onToggleFavourite,
+    this.isFavoriteProvider,
+    this.onToggleFavorite,
   });
 
   @override
@@ -44,8 +44,8 @@ class RecentSearchesList extends StatelessWidget {
           onRemove: () => onRemove(search.name),
           onOpenDetails: () => onSelect(search.name),
           onOpenForecast: () => onForecast(search.name),
-          isFavouriteProvider: isFavouriteProvider,
-          onToggleFavourite: onToggleFavourite,
+          isFavoriteProvider: isFavoriteProvider,
+          onToggleFavorite: onToggleFavorite,
         );
       },
       separatorBuilder: (_, __) => const SizedBox(height: 12),

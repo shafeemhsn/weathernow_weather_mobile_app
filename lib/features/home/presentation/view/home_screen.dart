@@ -27,12 +27,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _openRecentSearch(String city) async {
-    await Navigator.of(context).pushNamed(AppRouter.weather, arguments: {'city': city});
+    await Navigator.of(
+      context,
+    ).pushNamed(AppRouter.weather, arguments: {'city': city});
     await _refreshRecents();
   }
 
   Future<void> _openForecast(String city) async {
-    await Navigator.of(context).pushNamed(AppRouter.forecast, arguments: {'city': city});
+    await Navigator.of(
+      context,
+    ).pushNamed(AppRouter.forecast, arguments: {'city': city});
     await _refreshRecents();
   }
 
@@ -40,15 +44,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     await ref.read(recentSearchesViewModelProvider).remove(city);
   }
 
-  Future<bool> _isFavourite(String city) {
-    return ref.read(favouritesViewModelProvider).isFavourite(city);
+  Future<bool> _isFavorite(String city) {
+    return ref.read(favoritesViewModelProvider).isFavorite(city);
   }
 
-  Future<void> _toggleFavourite(String city, bool isFavourite) async {
-    if (isFavourite) {
-      await ref.read(favouritesViewModelProvider).remove(city);
+  Future<void> _toggleFavorite(String city, bool isFavorite) async {
+    if (isFavorite) {
+      await ref.read(favoritesViewModelProvider).remove(city);
     } else {
-      await ref.read(favouritesViewModelProvider).add(city);
+      await ref.read(favoritesViewModelProvider).add(city);
     }
   }
 
@@ -57,10 +61,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final recentSearchesViewModel = ref.watch(recentSearchesViewModelProvider);
     final weatherRepository = ref.read(weatherRepositoryProvider);
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const AppBrand(),
-      ),
+      appBar: AppBar(automaticallyImplyLeading: false, title: const AppBrand()),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -79,8 +80,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               onSelect: _openRecentSearch,
               onRemove: _removeRecent,
               onForecast: _openForecast,
-              isFavouriteProvider: _isFavourite,
-              onToggleFavourite: _toggleFavourite,
+              isFavoriteProvider: _isFavorite,
+              onToggleFavorite: _toggleFavorite,
             ),
             const SizedBox(height: 16),
           ],
@@ -90,7 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         currentIndex: 0,
         onTap: (index) {
           if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
+            Navigator.of(context).pushReplacementNamed(AppRouter.favorites);
           } else if (index == 2) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }

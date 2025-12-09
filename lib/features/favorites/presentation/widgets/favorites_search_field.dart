@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class FavouritesSearchField extends StatelessWidget {
+class FavoritesSearchField extends StatelessWidget {
   final ValueChanged<String> onSearch;
 
-  const FavouritesSearchField({super.key, required this.onSearch});
+  const FavoritesSearchField({super.key, required this.onSearch});
 
   @override
   Widget build(BuildContext context) {

@@ -13,9 +13,9 @@ class CityWeatherCard extends StatefulWidget {
     required this.onRemove,
     required this.onOpenDetails,
     required this.onOpenForecast,
-    this.showFavouriteAction = false,
-    this.isFavouriteProvider,
-    this.onToggleFavourite,
+    this.showFavoriteAction = false,
+    this.isFavoriteProvider,
+    this.onToggleFavorite,
   });
 
   final String city;
@@ -23,9 +23,9 @@ class CityWeatherCard extends StatefulWidget {
   final VoidCallback onRemove;
   final VoidCallback onOpenDetails;
   final VoidCallback onOpenForecast;
-  final bool showFavouriteAction;
-  final Future<bool> Function(String city)? isFavouriteProvider;
-  final Future<void> Function(String city, bool isFavourite)? onToggleFavourite;
+  final bool showFavoriteAction;
+  final Future<bool> Function(String city)? isFavoriteProvider;
+  final Future<void> Function(String city, bool isFavorite)? onToggleFavorite;
 
   @override
   State<CityWeatherCard> createState() => _CityWeatherCardState();
@@ -33,53 +33,54 @@ class CityWeatherCard extends StatefulWidget {
 
 class _CityWeatherCardState extends State<CityWeatherCard> {
   late Future<WeatherEntity> _weatherFuture;
-  bool? _isFavourite;
-  bool _isFavouriteLoading = false;
+  bool? _isFavorite;
+  bool _isFavoriteLoading = false;
 
   @override
   void initState() {
     super.initState();
     _weatherFuture = widget.repository.getWeatherByCity(widget.city);
-    _loadFavouriteStatus();
+    _loadFavoriteStatus();
   }
 
   @override
   void didUpdateWidget(covariant CityWeatherCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.city != widget.city || oldWidget.repository != widget.repository) {
+    if (oldWidget.city != widget.city ||
+        oldWidget.repository != widget.repository) {
       _weatherFuture = widget.repository.getWeatherByCity(widget.city);
     }
-    if (oldWidget.city != widget.city && widget.showFavouriteAction) {
-      _loadFavouriteStatus();
+    if (oldWidget.city != widget.city && widget.showFavoriteAction) {
+      _loadFavoriteStatus();
     }
   }
 
-  Future<void> _loadFavouriteStatus() async {
-    if (!widget.showFavouriteAction || widget.isFavouriteProvider == null) return;
-    setState(() => _isFavouriteLoading = true);
-    final status = await widget.isFavouriteProvider!(widget.city);
+  Future<void> _loadFavoriteStatus() async {
+    if (!widget.showFavoriteAction || widget.isFavoriteProvider == null) return;
+    setState(() => _isFavoriteLoading = true);
+    final status = await widget.isFavoriteProvider!(widget.city);
     if (!mounted) return;
     setState(() {
-      _isFavourite = status;
-      _isFavouriteLoading = false;
+      _isFavorite = status;
+      _isFavoriteLoading = false;
     });
   }
 
-  Future<void> _handleToggleFavourite() async {
-    if (!widget.showFavouriteAction ||
-        widget.onToggleFavourite == null ||
-        widget.isFavouriteProvider == null ||
-        _isFavouriteLoading) {
+  Future<void> _handleToggleFavorite() async {
+    if (!widget.showFavoriteAction ||
+        widget.onToggleFavorite == null ||
+        widget.isFavoriteProvider == null ||
+        _isFavoriteLoading) {
       return;
     }
-    final current = _isFavourite ?? false;
-    setState(() => _isFavouriteLoading = true);
-    await widget.onToggleFavourite!(widget.city, current);
-    final status = await widget.isFavouriteProvider!(widget.city);
+    final current = _isFavorite ?? false;
+    setState(() => _isFavoriteLoading = true);
+    await widget.onToggleFavorite!(widget.city, current);
+    final status = await widget.isFavoriteProvider!(widget.city);
     if (!mounted) return;
     setState(() {
-      _isFavourite = status;
-      _isFavouriteLoading = false;
+      _isFavorite = status;
+      _isFavoriteLoading = false;
     });
   }
 
@@ -139,22 +140,32 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
             Expanded(
               child: Text(
                 '${weather.cityName}, ${weather.country}',
-                style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                if (widget.showFavouriteAction)
+                if (widget.showFavoriteAction)
                   IconButton(
                     icon: Icon(
-                      (_isFavourite ?? false) ? Icons.favorite : Icons.favorite_border,
+                      (_isFavorite ?? false)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
                       color: Colors.redAccent,
                     ),
-                    onPressed: (_isFavouriteLoading || widget.onToggleFavourite == null) ? null : _handleToggleFavourite,
+                    onPressed:
+                        (_isFavoriteLoading || widget.onToggleFavorite == null)
+                        ? null
+                        : _handleToggleFavorite,
                   ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.redAccent),
+                  icon: const Icon(
+                    Icons.delete_outline,
+                    color: Colors.redAccent,
+                  ),
                   onPressed: widget.onRemove,
                 ),
               ],
@@ -175,7 +186,9 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
               children: [
                 Text(
                   '${weather.temperature.toStringAsFixed(0)}°C',
-                  style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+                  style: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                  ),
                 ),
                 Text(
                   _sentenceCase(weather.description),
@@ -184,7 +197,11 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.water_drop, size: 18, color: Colors.lightBlue),
+                    const Icon(
+                      Icons.water_drop,
+                      size: 18,
+                      color: Colors.lightBlue,
+                    ),
                     const SizedBox(width: 4),
                     Text('${weather.humidity.toStringAsFixed(0)}%'),
                   ],
@@ -207,7 +224,9 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
             onPressed: widget.onOpenDetails,
             style: FilledButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 9),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             child: const Text('View Details'),
           ),
@@ -220,7 +239,9 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
             label: const Text('Forecast'),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 9),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
           ),
         ),
@@ -237,7 +258,8 @@ class _CityWeatherCardState extends State<CityWeatherCard> {
   Color _toneFor(String description) {
     final lower = description.toLowerCase();
     if (lower.contains('thunder')) return const Color(0xFF6C63FF);
-    if (lower.contains('rain') || lower.contains('drizzle')) return const Color(0xFF1E88E5);
+    if (lower.contains('rain') || lower.contains('drizzle'))
+      return const Color(0xFF1E88E5);
     if (lower.contains('snow')) return const Color(0xFF90CAF9);
     if (lower.contains('cloud')) return const Color(0xFF546E7A);
     if (lower.contains('clear')) return const Color(0xFFFFB300);

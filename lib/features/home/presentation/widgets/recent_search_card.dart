@@ -10,8 +10,8 @@ class RecentSearchCard extends StatelessWidget {
   final VoidCallback onRemove;
   final VoidCallback onOpenDetails;
   final VoidCallback onOpenForecast;
-  final Future<bool> Function(String city)? isFavouriteProvider;
-  final Future<void> Function(String city, bool isFavourite)? onToggleFavourite;
+  final Future<bool> Function(String city)? isFavoriteProvider;
+  final Future<void> Function(String city, bool isFavorite)? onToggleFavorite;
 
   const RecentSearchCard({
     super.key,
@@ -20,8 +20,8 @@ class RecentSearchCard extends StatelessWidget {
     required this.onRemove,
     required this.onOpenDetails,
     required this.onOpenForecast,
-    this.isFavouriteProvider,
-    this.onToggleFavourite,
+    this.isFavoriteProvider,
+    this.onToggleFavorite,
   });
 
   @override
@@ -32,9 +32,10 @@ class RecentSearchCard extends StatelessWidget {
       onRemove: onRemove,
       onOpenDetails: onOpenDetails,
       onOpenForecast: onOpenForecast,
-      showFavouriteAction: isFavouriteProvider != null && onToggleFavourite != null,
-      isFavouriteProvider: isFavouriteProvider,
-      onToggleFavourite: onToggleFavourite,
+      showFavoriteAction:
+          isFavoriteProvider != null && onToggleFavorite != null,
+      isFavoriteProvider: isFavoriteProvider,
+      onToggleFavorite: onToggleFavorite,
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/widgets/app_bottom_nav_bar.dart';
 import '../../../../router/app_router.dart';
-import '../../../favourites/data/sources/favourites_local_source.dart';
+import '../../../favorites/data/sources/favorites_local_source.dart';
 import '../../../recent_searches/domain/usecases/clear_recent_searches.dart';
 import '../widgets/about_section.dart';
 import '../widgets/app_preferences_section.dart';
@@ -19,12 +19,12 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
-  late final FavouritesLocalSource _favouritesSource;
+  late final FavoritesLocalSource _favoritesSource;
 
   @override
   void initState() {
     super.initState();
-    _favouritesSource = ref.read(favouritesLocalSourceProvider);
+    _favoritesSource = ref.read(favoritesLocalSourceProvider);
     Future.microtask(() => ref.read(settingsViewModelProvider).load());
   }
 
@@ -45,7 +45,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 UnitToggleSection(
                   useFahrenheit: viewModel.settings!.temperatureUnit == 'F',
                   windUnit: viewModel.settings!.windUnit,
-                  onTemperatureChanged: (value) => viewModel.updateTempUnit(value ? 'F' : 'C'),
+                  onTemperatureChanged: (value) =>
+                      viewModel.updateTempUnit(value ? 'F' : 'C'),
                   onWindChanged: viewModel.updateWindUnit,
                 ),
                 const SizedBox(height: 12),
@@ -58,7 +59,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 const SizedBox(height: 12),
                 DataManagementSection(
                   onClearFavorites: _clearFavorites,
-                  onClearRecentSearches: () => _clearRecentSearchesHandler(clearRecentSearches),
+                  onClearRecentSearches: () =>
+                      _clearRecentSearchesHandler(clearRecentSearches),
                   onClearAll: () => _clearAllData(clearRecentSearches),
                 ),
                 const SizedBox(height: 12),
@@ -71,7 +73,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
+            Navigator.of(context).pushReplacementNamed(AppRouter.favorites);
           }
         },
       ),
@@ -79,32 +81,34 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _clearFavorites() async {
-    await _favouritesSource.clear();
+    await _favoritesSource.clear();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Favorites cleared')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Favorites cleared')));
     }
   }
 
-  Future<void> _clearRecentSearchesHandler(ClearRecentSearches clearRecentSearches) async {
+  Future<void> _clearRecentSearchesHandler(
+    ClearRecentSearches clearRecentSearches,
+  ) async {
     await clearRecentSearches.call();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Recent searches cleared')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Recent searches cleared')));
     }
   }
 
   Future<void> _clearAllData(ClearRecentSearches clearRecentSearches) async {
     final viewModel = ref.read(settingsViewModelProvider);
     await viewModel.clear();
-    await _favouritesSource.clear();
+    await _favoritesSource.clear();
     await clearRecentSearches.call();
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('All data cleared')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('All data cleared')));
     }
   }
 }

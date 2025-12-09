@@ -11,7 +11,7 @@ class AppDatabase {
   static const _dbName = 'weather_app.db';
   static const _dbVersion = 1;
 
-  static const favouritesTable = 'favourites';
+  static const favoritesTable = 'favorites';
   static const settingsTable = 'app_settings';
 
   static Database? _database;
@@ -36,7 +36,7 @@ class AppDatabase {
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('''
-      CREATE TABLE $favouritesTable (
+      CREATE TABLE $favoritesTable (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         city_name TEXT NOT NULL,
         country_code TEXT NOT NULL,

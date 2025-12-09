@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../../weather/data/repository/weather_repository_impl.dart';
 import '../../../weather/presentation/widgets/city_weather_card.dart';
 
-class FavouriteWeatherCard extends StatelessWidget {
-  const FavouriteWeatherCard({
+class FavoriteWeatherCard extends StatelessWidget {
+  const FavoriteWeatherCard({
     super.key,
     required this.city,
     required this.repository,

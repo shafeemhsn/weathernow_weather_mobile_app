@@ -18,11 +18,12 @@ class CurrentWeatherScreen extends ConsumerStatefulWidget {
   const CurrentWeatherScreen({super.key, this.city, this.coords});
 
   @override
-  ConsumerState<CurrentWeatherScreen> createState() => _CurrentWeatherScreenState();
+  ConsumerState<CurrentWeatherScreen> createState() =>
+      _CurrentWeatherScreenState();
 }
 
 class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
-  bool _isFavourite = false;
+  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -31,7 +32,7 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
   }
 
   Future<void> _loadWeather() async {
-    _isFavourite = false;
+    _isFavorite = false;
     final viewModel = ref.read(currentWeatherViewModelProvider);
     if (widget.city != null && widget.city!.isNotEmpty) {
       await viewModel.loadByCity(widget.city!);
@@ -46,7 +47,9 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
       await ref.read(addRecentSearchProvider).call(cityName);
       // Refresh recent searches so the home screen list updates immediately after returning.
       await ref.read(recentSearchesViewModelProvider).load();
-      _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(cityName);
+      _isFavorite = await ref
+          .read(favoritesViewModelProvider)
+          .isFavorite(cityName);
       if (mounted) setState(() {});
     }
   }
@@ -82,22 +85,24 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
     }
   }
 
-  Future<void> _toggleFavourite(String city) async {
-    final target = !_isFavourite;
+  Future<void> _toggleFavorite(String city) async {
+    final target = !_isFavorite;
     if (mounted) {
       setState(() {
-        _isFavourite = target;
+        _isFavorite = target;
       });
     }
     if (target) {
-      await ref.read(favouritesViewModelProvider).add(city);
+      await ref.read(favoritesViewModelProvider).add(city);
     } else {
-      await ref.read(favouritesViewModelProvider).remove(city);
+      await ref.read(favoritesViewModelProvider).remove(city);
     }
-    final persisted = await ref.read(favouritesViewModelProvider).isFavourite(city);
+    final persisted = await ref
+        .read(favoritesViewModelProvider)
+        .isFavorite(city);
     if (mounted) {
       setState(() {
-        _isFavourite = persisted;
+        _isFavorite = persisted;
       });
     }
   }
@@ -117,15 +122,15 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
       body: viewModel.isLoading
           ? const Center(child: CircularProgressIndicator())
           : viewModel.errorMessage != null
-              ? _buildError(viewModel.errorMessage!)
-              : _buildContent(viewModel.weather),
+          ? _buildError(viewModel.errorMessage!)
+          : _buildContent(viewModel.weather),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
         onTap: (index) {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
+            Navigator.of(context).pushReplacementNamed(AppRouter.favorites);
           } else if (index == 2) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
@@ -159,26 +164,25 @@ class _CurrentWeatherScreenState extends ConsumerState<CurrentWeatherScreen> {
     }
     return _WeatherContent(
       weather: weather,
-      isFavourite: _isFavourite,
-      onToggleFavourite: () => _toggleFavourite(weather.cityName),
-      onViewForecast: () => Navigator.of(context).pushNamed(
-        AppRouter.forecast,
-        arguments: {'city': weather.cityName},
-      ),
+      isFavorite: _isFavorite,
+      onToggleFavorite: () => _toggleFavorite(weather.cityName),
+      onViewForecast: () => Navigator.of(
+        context,
+      ).pushNamed(AppRouter.forecast, arguments: {'city': weather.cityName}),
     );
   }
 }
 
 class _WeatherContent extends StatelessWidget {
   final WeatherEntity weather;
-  final bool isFavourite;
-  final VoidCallback onToggleFavourite;
+  final bool isFavorite;
+  final VoidCallback onToggleFavorite;
   final VoidCallback onViewForecast;
 
   const _WeatherContent({
     required this.weather,
-    required this.isFavourite,
-    required this.onToggleFavourite,
+    required this.isFavorite,
+    required this.onToggleFavorite,
     required this.onViewForecast,
   });
 
@@ -214,19 +218,27 @@ class _WeatherContent extends StatelessWidget {
                     children: [
                       Text(
                         '${weather.cityName}, ${weather.country}',
-                        style: textTheme.headlineMedium?.copyWith(fontSize: 28, fontWeight: FontWeight.w700),
+                        style: textTheme.headlineMedium?.copyWith(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         'Current Weather',
-                        style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: Colors.black54,
+                        ),
                       ),
                     ],
                   ),
                 ),
                 IconButton(
-                  icon: Icon(isFavourite ? Icons.favorite : Icons.favorite_border, color: Colors.redAccent),
-                  onPressed: onToggleFavourite,
+                  icon: Icon(
+                    isFavorite ? Icons.favorite : Icons.favorite_border,
+                    color: Colors.redAccent,
+                  ),
+                  onPressed: onToggleFavorite,
                 ),
               ],
             ),
@@ -257,7 +269,9 @@ class _WeatherContent extends StatelessWidget {
                 label: const Text('View 5-day forecast'),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),

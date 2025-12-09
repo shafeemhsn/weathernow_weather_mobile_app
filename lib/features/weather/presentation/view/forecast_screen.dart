@@ -21,7 +21,7 @@ class ForecastScreen extends ConsumerStatefulWidget {
 
 class _ForecastScreenState extends ConsumerState<ForecastScreen> {
   String? _headerLocation;
-  bool _isFavourite = false;
+  bool _isFavorite = false;
 
   @override
   void initState() {
@@ -44,7 +44,9 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
       setState(() {
         _headerLocation = '${current.cityName}, ${current.country}';
       });
-      _isFavourite = await ref.read(favouritesViewModelProvider).isFavourite(current.cityName);
+      _isFavorite = await ref
+          .read(favoritesViewModelProvider)
+          .isFavorite(current.cityName);
       if (mounted) setState(() {});
     }
   }
@@ -63,8 +65,8 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
         title: Text('Forecast: ${_headerLocation ?? titleCity}'),
         actions: [
           IconButton(
-            icon: Icon(_isFavourite ? Icons.favorite : Icons.favorite_border),
-            onPressed: _toggleFavourite,
+            icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+            onPressed: _toggleFavorite,
           ),
         ],
       ),
@@ -79,8 +81,8 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
         child: viewModel.isLoading
             ? const Center(child: CircularProgressIndicator())
             : viewModel.errorMessage != null
-                ? _buildError(viewModel.errorMessage!)
-                : _buildList(viewModel.forecast),
+            ? _buildError(viewModel.errorMessage!)
+            : _buildList(viewModel.forecast),
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,
@@ -88,7 +90,7 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
           if (index == 0) {
             Navigator.of(context).pushReplacementNamed(AppRouter.home);
           } else if (index == 1) {
-            Navigator.of(context).pushReplacementNamed(AppRouter.favourites);
+            Navigator.of(context).pushReplacementNamed(AppRouter.favorites);
           } else if (index == 2) {
             Navigator.of(context).pushReplacementNamed(AppRouter.settings);
           }
@@ -116,24 +118,26 @@ class _ForecastScreenState extends ConsumerState<ForecastScreen> {
     return DateFormatter.formatShort(day.date);
   }
 
-  Future<void> _toggleFavourite() async {
+  Future<void> _toggleFavorite() async {
     final city = widget.city;
     if (city == null || city.isEmpty) return;
-    final target = !_isFavourite;
+    final target = !_isFavorite;
     if (mounted) {
       setState(() {
-        _isFavourite = target;
+        _isFavorite = target;
       });
     }
     if (target) {
-      await ref.read(favouritesViewModelProvider).add(city);
+      await ref.read(favoritesViewModelProvider).add(city);
     } else {
-      await ref.read(favouritesViewModelProvider).remove(city);
+      await ref.read(favoritesViewModelProvider).remove(city);
     }
-    final persisted = await ref.read(favouritesViewModelProvider).isFavourite(city);
+    final persisted = await ref
+        .read(favoritesViewModelProvider)
+        .isFavorite(city);
     if (mounted) {
       setState(() {
-        _isFavourite = persisted;
+        _isFavorite = persisted;
       });
     }
   }
