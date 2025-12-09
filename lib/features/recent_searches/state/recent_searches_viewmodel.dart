@@ -6,21 +6,25 @@ import '../domain/usecases/get_recent_searches.dart';
 import '../domain/usecases/remove_recent_search.dart';
 
 class RecentSearchesViewModel extends ChangeNotifier {
-  RecentSearchesViewModel(this._getRecents, this._clearRecents, this._removeRecent);
+  RecentSearchesViewModel(
+    this._getRecent,
+    this._clearRecent,
+    this._removeRecent,
+  );
 
-  final GetRecentSearches _getRecents;
-  final ClearRecentSearches _clearRecents;
+  final GetRecentSearches _getRecent;
+  final ClearRecentSearches _clearRecent;
   final RemoveRecentSearch _removeRecent;
 
   List<RecentSearch> recentSearches = <RecentSearch>[];
 
   Future<void> load() async {
-    recentSearches = await _getRecents.call();
+    recentSearches = await _getRecent.call();
     notifyListeners();
   }
 
   Future<void> clear() async {
-    await _clearRecents.call();
+    await _clearRecent.call();
     await load();
   }
 
