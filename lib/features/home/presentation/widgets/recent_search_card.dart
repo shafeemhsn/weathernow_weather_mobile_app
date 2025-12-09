@@ -29,9 +29,9 @@ class RecentSearchCard extends StatelessWidget {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return AppCard(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             child: const SizedBox(
-              height: 140,
+              height: 110,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
             ),
           );
@@ -39,14 +39,14 @@ class RecentSearchCard extends StatelessWidget {
         if (snapshot.hasError || !snapshot.hasData) {
           return AppCard(
             accent: const Color(0xFF9E9E9E),
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
             child: _errorContent(context),
           );
         }
         final weather = snapshot.data!;
         return AppCard(
           accent: _toneFor(weather.description),
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
           child: _content(context, weather),
         );
       },
@@ -58,7 +58,7 @@ class RecentSearchCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text('Unable to load weather right now'),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _actions(context, disabledForecast: true),
       ],
     );
@@ -92,10 +92,10 @@ class RecentSearchCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconTheme(
-              data: const IconThemeData(size: 38, color: Color(0xFF6B7A90)),
+              data: const IconThemeData(size: 30, color: Color(0xFF6B7A90)),
               child: DynamicWeatherIcon(condition: weather.description),
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -107,7 +107,7 @@ class RecentSearchCard extends StatelessWidget {
                   _sentenceCase(weather.description),
                   style: textTheme.bodyMedium?.copyWith(color: Colors.black54),
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 2),
                 Row(
                   children: [
                     const Icon(Icons.water_drop, size: 18, color: Colors.lightBlue),
@@ -119,7 +119,7 @@ class RecentSearchCard extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 8),
         _actions(context),
       ],
     );
@@ -132,7 +132,7 @@ class RecentSearchCard extends StatelessWidget {
           child: FilledButton(
             onPressed: onOpenDetails,
             style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 9),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
             child: const Text('View Details'),
@@ -145,7 +145,7 @@ class RecentSearchCard extends StatelessWidget {
             icon: const Icon(Icons.auto_graph),
             label: const Text('Forecast'),
             style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(vertical: 9),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ),
           ),
